@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../admin_assets/assets";
 import axios from "axios";
 import api, { adminApi, API_BASE_URL } from "../../api";
@@ -58,6 +58,7 @@ const AdminEditProduct = () => {
   const [imgSrc, setImgSrc] = useState("");
   const [imgElement, setImgElement] = useState(null);
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
   // Load product data
   useEffect(() => {
@@ -385,7 +386,6 @@ const AdminEditProduct = () => {
           }
         });
       });
-
       const res = await adminApi.put(`/edit_product/${id}/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -394,6 +394,7 @@ const AdminEditProduct = () => {
 
       if (res.status === 200) {
         toast.success("Product updated successfully");
+        navigate('/admin/products')
       } else {
         toast.error("Product update failed");
       }

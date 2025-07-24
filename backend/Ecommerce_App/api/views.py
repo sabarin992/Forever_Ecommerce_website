@@ -390,10 +390,12 @@ def add_product(request):
     
 
 # for edit product
+
 @api_view(['PUT','GET'])
 @permission_classes([AllowAny])
 def edit_product(request,id):
     product_variant = ProductVariant.objects.get(pk = id)
+
     if request.method == 'GET':
         product_data ={
             "id": product_variant.id,
@@ -439,6 +441,9 @@ def edit_product(request,id):
         product_variant.product.description = description
         product_variant.product.category = category
         product_variant.product.save()
+        
+        # for delete variants 
+        # ===================
         product_variant.product.variants.all().delete()  # Delete existing variants before adding new ones
         product_variant.product.product_image.all().delete()  # Delete existing images before adding new ones
 
@@ -468,6 +473,9 @@ def edit_product(request,id):
         
 
     return Response({'message': 'Product updated successfully'}, status=status.HTTP_200_OK)
+
+
+
 
 
 
@@ -621,11 +629,26 @@ def get_products(request):
 @permission_classes([AllowAny])
 def get_all_products(request):
     search = request.GET.get("search")
+
+    first_variant = ProductVariant.objects.filter(product=OuterRef('pk')).order_by('id')
+
+    productss = (
+        Product.objects
+        .annotate(one_variant_id=Subquery(first_variant.values('id')[:1]))
+    )
+        # Access the variant objects
+    variant_ids = [p.one_variant_id for p in productss if p.one_variant_id]
     if search:
-        products = ProductVariant.objects.filter(product__name__icontains=search)
+        
+        # products = ProductVariant.objects.filter(product__name__icontains=search)
+        variants = ProductVariant.objects.filter(pk__in=variant_ids,product__name__icontains=search)
     else:
-        products = ProductVariant.objects.all() 
-    data = paginate_queryset(products,5,request)
+        # products = ProductVariant.objects.all() 
+
+        # Subquery to pick the first variant of a product
+        variants = ProductVariant.objects.filter(pk__in=variant_ids)
+
+    data = paginate_queryset(variants,5,request)
     products_data = [
         {
             "id": product.id,
