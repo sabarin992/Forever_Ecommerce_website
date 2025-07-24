@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import api from "@/api";
 import { toast } from "react-toastify";
 import Pagination from "@/components/Pagination";
+import ConfirmModal from "@/ConfirmModal";
 
 const Cart = () => {
   const {
@@ -26,8 +27,8 @@ const Cart = () => {
     cartError,
   } = useContext(ShopContext);
   const navigate = useNavigate();
-  console.log(cartData);
-  
+  const [isModalOpen,setIsModalOpen] = useState(false);
+  const [productId,setProductId] = useState(null)
 
   // const removeCartItem = async(id)=>{
   //     try {
@@ -39,7 +40,11 @@ const Cart = () => {
 
   //     }
   // }
- 
+
+  const handleConfirmDeleteCartItem = () =>{
+    removeCartItem(productId)
+    setIsModalOpen(false)
+  }
 
   return (
     <div className="border-t pt-14">
@@ -78,7 +83,11 @@ const Cart = () => {
                 </div>
                 <div className="flex-shrink-0">
                   <button
-                    onClick={() => removeCartItem(productData.id)}
+                    onClick={() => {
+             
+                      removeCartItem(productData.id);
+                      
+                    }}
                     className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200"
                   >
                     <img
@@ -116,18 +125,18 @@ const Cart = () => {
                   </label>
                   <div className="flex items-center">
                     <input
-                    onChange={(e) => {
-                      setCartId(productData.id);
-                      setQuantity(e.target.value);
-                    }}
-                    className="w-20 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center"
-                    type="number"
-                    min={1}
-                    max={5}
-                    value={
-                      !cartError ? productData.quantity : productData.quantity
-                    }
-                  />
+                      onChange={(e) => {
+                        setCartId(productData.id);
+                        setQuantity(e.target.value);
+                      }}
+                      className="w-20 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center"
+                      type="number"
+                      min={1}
+                      max={5}
+                      value={
+                        !cartError ? productData.quantity : productData.quantity
+                      }
+                    />
                   </div>
                 </div>
 
@@ -199,8 +208,6 @@ const Cart = () => {
                   Quantity
                 </label>
                 <div className="flex justify-center">
-
-
                   <input
                     onChange={(e) => {
                       setCartId(productData.id);
@@ -232,7 +239,12 @@ const Cart = () => {
               {/* Remove Button - 0.5 columns */}
               <div className="col-span-1 flex justify-center">
                 <button
-                  onClick={() => removeCartItem(productData.id)}
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setProductId(productData.id)
+                    // removeCartItem(productData.id);
+                  
+                  }}
                   className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200 group"
                 >
                   <img
@@ -267,6 +279,13 @@ const Cart = () => {
         hasNext={hasNext}
         hasPrevious={hasPrevious}
         totalPages={totalPages}
+      />
+
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={()=>setIsModalOpen(false)}
+        onConfirm={handleConfirmDeleteCartItem}
+        message="Are you sure you want to add this item to cart?"
       />
     </div>
   );

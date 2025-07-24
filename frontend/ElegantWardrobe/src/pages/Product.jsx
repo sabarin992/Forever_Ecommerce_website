@@ -23,13 +23,14 @@ const Product = () => {
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
-  const [productColors,setProductColors] = useState(null)
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("description");
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [reviewProductId, setReviewProductId] = useState(null);
   const [variantId, setVariantId] = useState(null);
+  const [productColors, setProductColors] = useState(null);
+  const sizeOrder = ["S", "M", "L", "XL", "XXL"];
 
   // Ref for the image container
   const imageContainerRef = useRef(null);
@@ -115,8 +116,8 @@ const Product = () => {
       console.log(error?.response?.data?.error);
     }
   };
-  // ------------------------------------------------------------------------------------------------------------------------------
-  // // function for change the variant - only when both color and size are selected
+
+  // function for change the variant - only when both color and size are selected
   const handleVariantChange = async (id, selectedColor, selectedSize) => {
     // Only make API request if both color and size are selected
     if (!selectedColor || !selectedSize) {
@@ -129,26 +130,28 @@ const Product = () => {
       const res = await api.get(`/product_details/${id}/`, {
         params: { color: selectedColor, size: selectedSize },
       });
-
       setReviewProductId(id);
       setProductData(res.data);
       setImage(res.data.image);
     } catch (error) {
-      // toast.error(error?.response?.data?.error);
+      console.log(error.message);
     }
   };
 
   // Handle size selection
-  const handleSizeSelection = async(selectedSize, variantId) => {
+
+  const handleSizeSelection = async (selectedSize, variantId) => {
     setSize(selectedSize);
     setVariantId(variantId);
 
     try {
-        const res = await api.get('/get-product-colors/',{params:{variant_id:variantId,size:selectedSize}})
-        setProductColors(res.data)
+      const res = await api.get("/get-product-colors/", {
+        params: { variant_id: variantId, size: selectedSize },
+      });
+      setProductColors(res.data);
+      console.log(res.data);
     } catch (error) {
-      console.log('error');
-      
+      console.log("error");
     }
 
     // Check if color is already selected, then make API request
@@ -167,13 +170,6 @@ const Product = () => {
       handleVariantChange(variantId, selectedColor, size);
     }
   };
-
-
-  const handleSizeChange = ()=>{
-        console.log(`The size = ${size}`)
-  }
-
-  // ------------------------------------------------------------------------------------------------------------------------------
 
   if (isLoading) {
     return (
@@ -285,7 +281,6 @@ const Product = () => {
                   </span>
                 </div>
               </div>
-
               {/* Price */}
               <div className="flex items-baseline gap-4">
                 {productData.discounted_amount != 0 ? (
@@ -316,12 +311,10 @@ const Product = () => {
                   </>
                 )}
               </div>
-
               {/* Description */}
               <p className="text-gray-600 text-lg leading-relaxed">
                 {productData.description}
               </p>
-
               {/* Size Selection */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -333,32 +326,44 @@ const Product = () => {
                 <div className="flex flex-wrap gap-3">
                   {[
                     ...new Map(
-                      productData.sizes.map((item) => [item.size, item])
+                      productData?.sizes.map((item) => [item.size, item])
                     ).values(),
-                  ].map((item) => (
-                    <button
-                      key={item.variant_id}
-                      onClick={() =>{
-                        handleSizeSelection(item.size, item.variant_id)
-                    
-                        
-                      }
-                      }
-                      className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
-                        item.size === size
-                          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      {item.size}
-                    </button>
-                  ))}
+                  ]
+                    .sort((a, b) => {
+                      const indexA = sizeOrder.indexOf(a.size);
+                      const indexB = sizeOrder.indexOf(b.size);
+
+                      // If size is not in sizeOrder array, put it at the end
+                      if (indexA === -1 && indexB === -1) return 0;
+                      if (indexA === -1) return 1;
+                      if (indexB === -1) return -1;
+
+                      return indexA - indexB;
+                    })
+                    .map((item) => (
+                      <button
+                        key={item.variant_id}
+                        onClick={() =>
+                          handleSizeSelection(item.size, item.variant_id)
+                        }
+                        className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+                          item.size === size
+                            ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        {item.size}
+                      </button>
+                    ))}
                 </div>
               </div>
-
               {/* Color Selection */}
+
               <div className="space-y-4">
-                {productColors?<h3 className="text-xl font-semibold text-gray-900">Color</h3>:null}
+                {productColors ? (
+                  <h3 className="text-xl font-semibold text-gray-900">Color</h3>
+                ) : null}
+
                 <div className="flex flex-wrap gap-3">
                   {[
                     ...new Map(
@@ -369,7 +374,6 @@ const Product = () => {
                       key={item.variant_id}
                       onClick={() =>
                         handleColorSelection(item.color, item.variant_id)
-                      
                       }
                       className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
                         item.color === color
@@ -382,7 +386,29 @@ const Product = () => {
                   ))}
                 </div>
               </div>
-
+              {/* Color Selection */}
+              {/* <div className="space-y-4">
+                <h3 className="text-xl font-semibold text-gray-900">Color</h3>
+                <div className="flex flex-wrap gap-3">
+                  {[
+                    ...new Map(
+                      productData?.colors?.map((item) => [item.color, item])
+                    ).values(),
+                  ].map((item) => (
+                    <button
+                      key={item.variant_id}
+                      onClick={() => handleColorSelection(item.color, item.variant_id)}
+                      className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+                        item.color === color
+                          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {item.color}
+                    </button>
+                  ))}
+                </div>
+              </div> */}
               {/* Stock Status */}
               <div className="flex items-center gap-3">
                 {productData.stock_quantity > 0 ? (
@@ -401,29 +427,29 @@ const Product = () => {
                   </>
                 )}
               </div>
-
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={() => addToCart(productData.id, size)}
-                  className="flex-1 bg-black hover:from-blue-700  text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 group"
-                >
-                  <svg
-                    className="w-6 h-6 group-hover:animate-bounce"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                {!productData.is_in_cart ? (
+                  <button
+                    onClick={() => addToCart(productData.id, size)}
+                    className="flex-1 bg-black hover:from-blue-700  text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 group"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 2.5M7 13l2.5 2.5m6 1.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-9 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
-                    />
-                  </svg>
-                  ADD TO CART
-                </button>
-
+                    <svg
+                      className="w-6 h-6 group-hover:animate-bounce"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 2.5M7 13l2.5 2.5m6 1.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-9 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
+                      />
+                    </svg>
+                    ADD TO CART
+                  </button>
+                ) : null}
                 {!productData.is_in_wishlist ? (
                   <button
                     onClick={() => addToWishList(productData.id)}
@@ -452,7 +478,6 @@ const Product = () => {
                   </button>
                 ) : null}
               </div>
-
               {/* Product Features */}
               <div className="bg-gray-50 rounded-2xl p-6 space-y-3">
                 <div className="flex items-center gap-3 text-gray-700">
@@ -622,12 +647,14 @@ export default Product;
 //   const [image, setImage] = useState("");
 //   const [size, setSize] = useState("");
 //   const [color, setColor] = useState("");
+//   const [productColors,setProductColors] = useState(null)
 //   const [isLoading, setIsLoading] = useState(true);
 //   const [activeTab, setActiveTab] = useState("description");
 //   const [quantity, setQuantity] = useState(1);
 //   const [isWishlisted, setIsWishlisted] = useState(false);
 //   const [reviewProductId, setReviewProductId] = useState(null);
-//   const [variantId,setVariantId] = useState(null)
+//   const [variantId, setVariantId] = useState(null);
+//   const sizeOrder = ['S','M','L','XL','XXL']
 
 //   // Ref for the image container
 //   const imageContainerRef = useRef(null);
@@ -637,7 +664,7 @@ export default Product;
 //       try {
 //         setIsLoading(true);
 //         const res = await api.get(`/product_details/${productId}/`);
-//         console.log(res.data);
+//         console.log(res.data.sizes);
 
 //         setProductData(res.data);
 //         setImage(res.data.image);
@@ -713,19 +740,64 @@ export default Product;
 //       console.log(error?.response?.data?.error);
 //     }
 //   };
+//   // ------------------------------------------------------------------------------------------------------------------------------
+//   // // function for change the variant - only when both color and size are selected
+//   const handleVariantChange = async (id, selectedColor, selectedSize) => {
+//     // Only make API request if both color and size are selected
+//     if (!selectedColor || !selectedSize) {
+//       console.log("Both color and size must be selected");
+//       return;
+//     }
 
-//   // function for change the variant
-//   const handleVariantChange = async (id) => {
-//     console.log(color,size)
+//     console.log("Making API request with:", selectedColor, selectedSize);
 //     try {
-//       const res = await api.get(`/product_details/${id}/`,{params:{color:color,size:size}});
+//       const res = await api.get(`/product_details/${id}/`, {
+//         params: { color: selectedColor, size: selectedSize },
+//       });
+
 //       setReviewProductId(id);
 //       setProductData(res.data);
 //       setImage(res.data.image);
 //     } catch (error) {
-//       console.log(error.message);
+//       // toast.error(error?.response?.data?.error);
 //     }
 //   };
+
+//   // Handle size selection
+// const handleSizeSelection = async(selectedSize, variantId) => {
+//   setSize(selectedSize);
+//   setVariantId(variantId);
+
+//   try {
+//       const res = await api.get('/get-product-colors/',{params:{variant_id:variantId,size:selectedSize}})
+//       setProductColors(res.data)
+//   } catch (error) {
+//     console.log('error');
+
+//   }
+
+//   // Check if color is already selected, then make API request
+//   if (color) {
+//     handleVariantChange(variantId, color, selectedSize);
+//   }
+// };
+
+// Handle color selection
+// const handleColorSelection = (selectedColor, variantId) => {
+//   setColor(selectedColor);
+//   setVariantId(variantId);
+
+//   // Check if size is already selected, then make API request
+//   if (size) {
+//     handleVariantChange(variantId, selectedColor, size);
+//   }
+// };
+
+//   const handleSizeChange = ()=>{
+//         console.log(`The size = ${size}`)
+//   }
+
+//   // ------------------------------------------------------------------------------------------------------------------------------
 
 //   if (isLoading) {
 //     return (
@@ -885,16 +957,16 @@ export default Product;
 //                 <div className="flex flex-wrap gap-3">
 //                   {[
 //                     ...new Map(
-//                       productData.sizes.map((item) => [item.size, item])
+//                       productData?.sizes.map((item) => [item.size, item])
 //                     ).values(),
 //                   ].map((item) => (
 //                     <button
 //                       key={item.variant_id}
-//                       onClick={() => {
-//                         setSize(item.size);
-//                         handleVariantChange(item.variant_id);
-//                         setVariantId(item.variant_id)
-//                       }}
+//                       onClick={() =>{
+//                         handleSizeSelection(item.size, item.variant_id)
+
+//                       }
+//                       }
 //                       className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
 //                         item.size === size
 //                           ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
@@ -909,21 +981,19 @@ export default Product;
 
 //               {/* Color Selection */}
 //               <div className="space-y-4">
-//                 <h3 className="text-xl font-semibold text-gray-900">Color</h3>
+//                 {productColors?<h3 className="text-xl font-semibold text-gray-900">Color</h3>:null}
 //                 <div className="flex flex-wrap gap-3">
 //                   {[
 //                     ...new Map(
-//                       productData.colors.map((item) => [item.color, item])
+//                       productColors?.map((item) => [item.color, item])
 //                     ).values(),
 //                   ].map((item) => (
 //                     <button
 //                       key={item.variant_id}
-//                       onClick={() => {
-//                         setColor(item.color);
-//                         handleVariantChange(item.variant_id)
-//                         setVariantId(item.variant_id)
-//                         console.log(item.variant_id);
-//                       }}
+//                       onClick={() =>
+//                         handleColorSelection(item.color, item.variant_id)
+
+//                       }
 //                       className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
 //                         item.color === color
 //                           ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
@@ -934,25 +1004,6 @@ export default Product;
 //                     </button>
 //                   ))}
 //                 </div>
-
-//                 {/* <div className="flex flex-wrap gap-3">
-//                   {productData.colors.map((item, index) => (
-//                     <button
-//                       key={item.variant_id}
-//                       onClick={() => {
-//                         setColor(item.color);
-//                         handleVariantChange(item.variant_id);
-//                       }}
-//                       className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
-//                         item.color === color
-//                           ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-//                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-//                       }`}
-//                     >
-//                       {item.color}
-//                     </button>
-//                   ))}
-//                 </div> */}
 //               </div>
 
 //               {/* Stock Status */}
@@ -976,27 +1027,26 @@ export default Product;
 
 //               {/* Action Buttons */}
 //               <div className="flex flex-col sm:flex-row gap-4">
-//                 {!productData.is_in_cart ? (
-//                   <button
-//                     onClick={() => addToCart(productData.id, size)}
-//                     className="flex-1 bg-black hover:from-blue-700  text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 group"
+//                 <button
+//                   onClick={() => addToCart(productData.id, size)}
+//                   className="flex-1 bg-black hover:from-blue-700  text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 group"
+//                 >
+//                   <svg
+//                     className="w-6 h-6 group-hover:animate-bounce"
+//                     fill="none"
+//                     stroke="currentColor"
+//                     viewBox="0 0 24 24"
 //                   >
-//                     <svg
-//                       className="w-6 h-6 group-hover:animate-bounce"
-//                       fill="none"
-//                       stroke="currentColor"
-//                       viewBox="0 0 24 24"
-//                     >
-//                       <path
-//                         strokeLinecap="round"
-//                         strokeLinejoin="round"
-//                         strokeWidth={2}
-//                         d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 2.5M7 13l2.5 2.5m6 1.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-9 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
-//                       />
-//                     </svg>
-//                     ADD TO CART
-//                   </button>
-//                 ) : null}
+//                     <path
+//                       strokeLinecap="round"
+//                       strokeLinejoin="round"
+//                       strokeWidth={2}
+//                       d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 2.5M7 13l2.5 2.5m6 1.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-9 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
+//                     />
+//                   </svg>
+//                   ADD TO CART
+//                 </button>
+
 //                 {!productData.is_in_wishlist ? (
 //                   <button
 //                     onClick={() => addToWishList(productData.id)}
