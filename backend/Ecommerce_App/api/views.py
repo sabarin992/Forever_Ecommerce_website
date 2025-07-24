@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -150,7 +150,7 @@ def get_product_data(request,is_more_products,products=None,product=None):
             "price": product.price,
             "discounted_amount": product.final_price,
             "sizes": [{'variant_id':variant.id,'size':variant.size} for variant in product.product.variants.filter(product=product.product)],
-            "colors":[{'variant_id':variant.id,'color':variant.color} for variant in product.product.variants.filter(product=product.product)],
+            # "colors":[{'variant_id':variant.id,'color':variant.color} for variant in product.product.variants.filter(product=product.product)],
             "image": request.build_absolute_uri(
                 product.product.product_image.filter(
                     product=product.product, variant=product, is_primary=True
@@ -639,7 +639,7 @@ def get_all_products(request):
         # Access the variant objects
     variant_ids = [p.one_variant_id for p in productss if p.one_variant_id]
     if search:
-        
+
         # products = ProductVariant.objects.filter(product__name__icontains=search)
         variants = ProductVariant.objects.filter(pk__in=variant_ids,product__name__icontains=search)
     else:
@@ -750,13 +750,38 @@ def filter_product(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def product_details(request,id):
+    size = request.GET.get('size')
+    color = request.GET.get('color')
+    if size and color:
+        initial_variant = get_object_or_404(ProductVariant, id=id, is_active=True)
+        base_product = initial_variant.product
+        try:
+                product = ProductVariant.objects.get(
+                    product=base_product,
+                    size=size,
+                    color=color,
+                    is_active=True
+                )
+                # Return the selected variant details
+                # print(selected_variant)
+                is_in_wishlist = Wishlist.objects.filter(user=request.user, product_variant=product).exists()
+                # is_in_cart = CartItem.objects.filter(user=request.user, product_variant=product).exists()
+                product_data = product_data = get_product_data(request,is_more_products=False,product=product)
+                product_data['is_in_wishlist'] = is_in_wishlist
+                # product_data['is_in_cart'] = is_in_cart
+                return Response(product_data,status=status.HTTP_200_OK)
+                
+                
+        except ProductVariant.DoesNotExist:
+            return Response({
+                'error': f'There no {base_product.name} Product with size {size} and color {color}'
+            }, status=status.HTTP_404_NOT_FOUND)
     product = ProductVariant.objects.get(pk = id)
     is_in_wishlist = Wishlist.objects.filter(user=request.user, product_variant=product).exists()
-    is_in_cart = CartItem.objects.filter(user=request.user, product_variant=product).exists()
-    product_data = product_data = get_product_data(request,is_more_products=False,product=product)
-    # {'result':product_data,'is_in_wishlist':is_in_wishlist,'is_in_cart':is_in_cart}
+    # is_in_cart = CartItem.objects.filter(user=request.user, product_variant=product).exists()
+    product_data = get_product_data(request,is_more_products=False,product=product)
     product_data['is_in_wishlist'] = is_in_wishlist
-    product_data['is_in_cart'] = is_in_cart
+    # product_data['is_in_cart'] = is_in_cart
     return Response(product_data,status=status.HTTP_200_OK)
 
 
@@ -2469,3 +2494,18 @@ class ListReviewView(generics.ListAPIView):
     def get_queryset(self):
         product_variant_id = self.kwargs['product_variant_id']
         return Review.objects.filter(product_variant_id=product_variant_id).order_by('-created_at')
+    
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_product_colors(request):
+    variant_id = request.GET.get('variant_id')
+    size = request.GET.get('size')
+    initial_variant = get_object_or_404(ProductVariant, id=variant_id, is_active=True)
+    product = initial_variant.product
+    product_variants = product.variants.filter(size = size)
+    colors = [{"variant_id":variant.id,"color":variant.color} for variant in product_variants]
+    
+
+    return Response(colors)
