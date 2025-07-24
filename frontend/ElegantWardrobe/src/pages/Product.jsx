@@ -27,7 +27,7 @@ const Product = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [reviewProductId,setReviewProductId] = useState(null)
+  const [reviewProductId, setReviewProductId] = useState(null);
 
   // Ref for the image container
   const imageContainerRef = useRef(null);
@@ -118,7 +118,7 @@ const Product = () => {
   const handleVariantChange = async (id) => {
     try {
       const res = await api.get(`/product_details/${id}/`);
-      setReviewProductId(id)
+      setReviewProductId(id);
       setProductData(res.data);
       setImage(res.data.image);
     } catch (error) {
@@ -282,7 +282,11 @@ const Product = () => {
                   </button> */}
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {productData.sizes.map((item, index) => (
+                  {[
+                    ...new Map(
+                      productData.sizes.map((item) => [item.size, item])
+                    ).values(),
+                  ].map((item) => (
                     <button
                       key={item.variant_id}
                       onClick={() => setSize(item.size)}
@@ -296,12 +300,52 @@ const Product = () => {
                     </button>
                   ))}
                 </div>
+
+                {/* <div className="flex flex-wrap gap-3">
+                  {productData.sizes.map((item, index) => (
+                    <button
+                      key={item.variant_id}
+                      onClick={() => setSize(item.size)}
+                      className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+                        item.size === size
+                          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {item.size}
+                    </button>
+                  ))}
+                </div> */}
               </div>
 
               {/* Color Selection */}
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold text-gray-900">Color</h3>
                 <div className="flex flex-wrap gap-3">
+                  {[
+                    ...new Map(
+                      productData.colors.map((item) => [item.color, item])
+                    ).values(),
+                  ].map((item) => (
+                    <button
+                      key={item.variant_id}
+                      onClick={() => {
+                        setColor(item.color);
+                        handleVariantChange(item.variant_id);
+                        console.log(item.variant_id)
+                      }}
+                      className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+                        item.color === color
+                          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {item.color}
+                    </button>
+                  ))}
+                </div>
+
+                {/* <div className="flex flex-wrap gap-3">
                   {productData.colors.map((item, index) => (
                     <button
                       key={item.variant_id}
@@ -318,7 +362,7 @@ const Product = () => {
                       {item.color}
                     </button>
                   ))}
-                </div>
+                </div> */}
               </div>
 
               {/* Stock Status */}
@@ -564,7 +608,9 @@ const Product = () => {
                 </div>
               </div>
             ) : (
-              <ProductReview productId = {reviewProductId?reviewProductId:productId}/>
+              <ProductReview
+                productId={reviewProductId ? reviewProductId : productId}
+              />
             )}
           </div>
         </div>
