@@ -74,6 +74,11 @@ const WishList = () => {
       toast.success(res.data);
       setIsAddToCart(!isAddToCart);
     } catch (error) {
+      if(error?.response?.data){
+        toast.error(error?.response?.data)
+        return
+      }
+      
       const match = error?.response?.data?.error?.match(/'([^']+)'/);
       const cleanMessage = match ? match[1] : error?.response?.data?.error;
       toast.error(cleanMessage || "Add to cart failed");

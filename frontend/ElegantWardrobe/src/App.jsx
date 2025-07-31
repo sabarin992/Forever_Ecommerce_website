@@ -59,6 +59,7 @@ import EditProductOffer from "./admin/offer/pages/EditProductOffer";
 import AddCategoryOffer from "./admin/offer/pages/AddCategoryOffer";
 import EditCategoryOffer from "./admin/offer/pages/EditCategoryOffer";
 import AddReviewRating from "./pages/AddReviewRating";
+import Logout from "./pages/Logout";
 
 const App = () => {
   const [token, setToken] = useState("");
@@ -155,6 +156,7 @@ const App = () => {
           <Route path="forgot-password-sent-otp-form" element={<ForgotPasswordSentOtpForm/>}/>
           <Route path="forgot-password-otp-verification" element={<ForgotPasswordOtpVerificationForm/>}/>
           <Route path="forgot-password" element={<ForgotPasswordForm/>}/>
+          <Route path = "logout" element = {<Logout/>}/>
         </Route>
 
         <Route path="profile" element={<UserProfileLayout />}>

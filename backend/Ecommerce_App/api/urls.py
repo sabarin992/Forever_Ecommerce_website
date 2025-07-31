@@ -14,7 +14,7 @@ router.register(r'category_offers',views.CategoryOfferViewSet)
 urlpatterns = [
     path('',include(router.urls)),
     path('index/',views.index,name="index"),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/refresh/', views.refresh_token),
     path('add_product/',views.add_product,name="add_product"),
     path('edit_product/<int:id>/',views.edit_product,name="edit_product"),
     path('login/',views.login,name='login'),
@@ -119,7 +119,10 @@ urlpatterns = [
     path('reviews/<int:product_variant_id>/', views.ListReviewView.as_view(), name='list-reviews'),
 
 
-    path('get-product-colors/',views.get_product_colors)
+    path('get-product-colors/',views.get_product_colors),
+
+    path('logout/',views.logout),
+    path('check-auth/',views.check_auth)
 
   
 

@@ -7,7 +7,7 @@ from .serializer import ProductVariantSerializer,RegisterSerializer,CouponSerial
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import viewsets
-from rest_framework.decorators import api_view,permission_classes,action
+from rest_framework.decorators import api_view,permission_classes,action,authentication_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate
@@ -50,6 +50,8 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from decouple import config
 from rest_framework import generics
+from django.views.decorators.csrf import csrf_exempt
+from .authentication import JWTCookieAuthentication
 
 
 
@@ -203,32 +205,134 @@ def index(request):
     return Response('This is index page response')
 
 
-# user login view
 
-# api for login 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([AllowAny]) 
+@authentication_classes([])
 def login(request):
     if request.method == "POST":
         email = request.data.get("email")
         password = request.data.get("password")
+
+        # Validate email
         try:
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
-            return Response({'error':'Invalid Email'},status=status.HTTP_400_BAD_REQUEST)
-        
-        if not check_password(password,user.password):
-            return Response({'error':'Invalid Password'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid Email'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate password
+        if not check_password(password, user.password):
+            return Response({'error': 'Invalid Password'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Authenticate user
         user = authenticate(email=email, password=password)
-        
         if user is not None:
+            # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
-            return Response({
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+
+            # Create response
+            response = Response({
+                "message": "Login successful",
+                "user": {"email": user.email},  # Add user info if needed
             }, status=status.HTTP_200_OK)
 
+            # Set HTTP-only cookies
+            response.set_cookie(
+                key='access_token',
+                value=access_token,
+                httponly=True,  # Prevent JavaScript access
+                secure=True,    # Use HTTPS in production
+                samesite='None',  # Prevent CSRF
+                max_age=3600    # Access token expiry (e.g., 1 hour)
+            )
+            response.set_cookie(
+                key='refresh_token',
+                value=refresh_token,
+                httponly=True,
+                secure=True,
+                samesite='None',
+                max_age=7 * 24 * 3600  # Refresh token expiry (e.g., 7 days)
+            )
+
+            return response
+
         return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+@api_view(['POST'])
+@authentication_classes([JWTCookieAuthentication])    
+
+def logout(request):
+    print('logout')
+    response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
+
+    # Clear cookies by setting max_age to 0
+    response.delete_cookie('access_token')
+    response.delete_cookie('refresh_token')
+
+    return response
+
+
+
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def refresh_token(request):
+    refresh_token = request.COOKIES.get('refresh_token')
+
+    if not refresh_token:
+        return Response({"error": "Refresh token not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # Validate and generate new access token
+        refresh = RefreshToken(refresh_token)
+        access_token = str(refresh.access_token)
+
+        # Create response
+        response = Response({"message": "Token refreshed successfully"}, status=status.HTTP_200_OK)
+
+        # Set new access token in cookie
+        response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=True,
+            secure=True,
+            samesite='None',
+            max_age=3600  # Adjust based on access token lifetime
+        )
+
+        return response
+
+    except Exception as e:
+        return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def login(request):
+#     if request.method == "POST":
+#         email = request.data.get("email")
+#         password = request.data.get("password")
+#         try:
+#             user = CustomUser.objects.get(email=email)
+#         except CustomUser.DoesNotExist:
+#             return Response({'error':'Invalid Email'},status=status.HTTP_400_BAD_REQUEST)
+        
+#         if not check_password(password,user.password):
+#             return Response({'error':'Invalid Password'},status=status.HTTP_400_BAD_REQUEST)
+#         user = authenticate(email=email, password=password)
+        
+#         if user is not None:
+#             refresh = RefreshToken.for_user(user)
+#             return Response({
+#                 "refresh": str(refresh),
+#                 "access": str(refresh.access_token),
+#             }, status=status.HTTP_200_OK)
+
+#         return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
@@ -1229,7 +1333,7 @@ def place_order(request):
             order.status = 'PENDING'
     elif payment_method == "WALLET":
         wallet = Wallet.objects.get(user=user)
-        wallet.debit(order.total, f'Order payment for {order.order_no}')
+        wallet.debit(order.final_amount, f'Order payment for {order.order_no}')
         order.status = 'CONFIRMED'
     else:  # COD
         order.status = payment_status if payment_status else 'PENDING'
@@ -2509,3 +2613,9 @@ def get_product_colors(request):
     
 
     return Response(colors)
+
+
+@api_view(['GET'])
+@authentication_classes([JWTCookieAuthentication])
+def check_auth(request):
+    return Response({"message": "Authenticated"}, status=200)

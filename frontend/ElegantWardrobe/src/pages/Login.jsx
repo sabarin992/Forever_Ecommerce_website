@@ -107,9 +107,8 @@ const Login = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await api.post("/login/", { email, password });
-      localStorage.setItem(USER_ACCESS_TOKEN, res.data.access);
-      localStorage.setItem(USER_REFRESH_TOKEN, res.data.refresh);
+      const res = await api.post("/login/", { email, password },{withCredentials: true});
+      console.log(res.data)
       toast.success("Login Successful");
       navigate("/");
     } catch (error) {
