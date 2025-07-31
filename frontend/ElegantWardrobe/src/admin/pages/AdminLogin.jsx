@@ -23,8 +23,6 @@ const AdminLogin = ()=> {
         password,
       });
       setError('')
-      localStorage.setItem(ADMIN_ACCESS_TOKEN, response.data.access);
-      localStorage.setItem(ADMIN_REFRESH_TOKEN,response.data.refresh);
       toast.success('Admin logged in successfully');
       navigate('/admin')
       // Navigate to admin dashboard here

@@ -66,7 +66,7 @@ function AdminOrders() {
     
     const getOrders = async()=>{
       try {
-        const res = await adminApi.get('get_all_orders',{params:{page:activePage,search:search}})  
+        const res = await adminApi.get('/get_all_orders/',{params:{page:activePage,search:search}})  
         console.log(res.data.results);
              
         setOrders(res.data.results)

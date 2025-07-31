@@ -7,7 +7,6 @@ export const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 // ----- User API Instance -----
 
-// Create Axios instance
 export const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
@@ -16,33 +15,30 @@ export const api = axios.create({
   },
 });
 
-
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('interceptor response')
+    return response},
   async (error) => {
     const originalRequest = error.config;
-
-    // If 401 Unauthorized AND not already retried
+    console.log('status = ',error?.response?.status);
+    
     if (
-      error.response?.status === 401 &&
+      error.response?.status === 401 ||  error.response?.status === 403 &&
       !originalRequest._retry &&
       !originalRequest.url.includes("/token/refresh/")
     ) {
       originalRequest._retry = true;
 
       try {
-        // Call refresh endpoint (cookies will be included automatically)
-        const refreshResponse = await axios.post(
-          `${API_BASE_URL}/token/refresh/`,
-          {},
-          { withCredentials: true } // ✅ send cookies
-        );
+        console.log("Refreshing token...");
+        await api.post("/token/refresh/"); // Use same Axios instance
 
-        // You don’t need to manually set the token, just retry request
-        return api(originalRequest);
+        return api(originalRequest); // Retry original request
       } catch (refreshError) {
-        console.error("Token refresh failed", refreshError);
-        // Optionally redirect to login or show error
+        console.error("Refresh token failed:", refreshError);
+        // Optionally: redirect to login
+        return Promise.reject(refreshError);
       }
     }
 
@@ -94,65 +90,102 @@ api.interceptors.response.use(
 // Create Axios instance
 export const adminApi = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 
-// request interceptor
-adminApi.interceptors.request.use( // Add access token to every request
-  (config) => {
-    const token = localStorage.getItem(ADMIN_ACCESS_TOKEN);
-    console.log(token);
-    
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      // console.log(config.headers.Authorization);
-      
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-
-// Response Interceptor
-adminApi.interceptors.response.use( // Handle token expiration and refresh
+adminApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    // console.log('original',originalRequest._retry);
-    
-    // If token expired and not already retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      
+
+    // If 401 Unauthorized AND not already retried
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/token/refresh/")
+    ) {
       originalRequest._retry = true;
-      const refreshToken = localStorage.getItem(ADMIN_REFRESH_TOKEN);
 
-      if (refreshToken) {
-        try {
-          const res = await axios.post(`${API_BASE_URL}/token/refresh/`, {
-            refresh: refreshToken,
-          });
-          console.log('response refresh',res);
-          
+      try {
+        console.log('access token updated');
+        
+        // Call refresh endpoint (cookies will be included automatically)
+        const refreshResponse = await axios.post(
+          `${API_BASE_URL}/token/refresh/`,
+          {},
+          { withCredentials: true } // ✅ send cookies
+        );
 
-          const newAccessToken = res.data.access;
-          localStorage.setItem(ADMIN_ACCESS_TOKEN, newAccessToken);
-
-          // Retry original request with new access token
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return api(originalRequest);
-        } catch (refreshError) {
-          console.error("Refresh token invalid:", refreshError);
-        }
+        // You don’t need to manually set the token, just retry request
+        return adminApi(originalRequest);
+      } catch (refreshError) {
+        // console.error("Token refresh failed", refreshError);
+        // Optionally redirect to login or show error
       }
     }
 
     return Promise.reject(error);
   }
 );
+
+
+// // request interceptor
+// adminApi.interceptors.request.use( // Add access token to every request
+//   (config) => {
+//     const token = localStorage.getItem(ADMIN_ACCESS_TOKEN);
+//     console.log(token);
+    
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//       // console.log(config.headers.Authorization);
+      
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
+
+// // Response Interceptor
+// adminApi.interceptors.response.use( // Handle token expiration and refresh
+//   (response) => response,
+//   async (error) => {
+//     const originalRequest = error.config;
+//     // console.log('original',originalRequest._retry);
+    
+//     // If token expired and not already retried
+//     if (error.response?.status === 401 && !originalRequest._retry) {
+      
+//       originalRequest._retry = true;
+//       const refreshToken = localStorage.getItem(ADMIN_REFRESH_TOKEN);
+
+//       if (refreshToken) {
+//         try {
+//           const res = await axios.post(`${API_BASE_URL}/token/refresh/`, {
+//             refresh: refreshToken,
+//           });
+//           console.log('response refresh',res);
+          
+
+//           const newAccessToken = res.data.access;
+//           localStorage.setItem(ADMIN_ACCESS_TOKEN, newAccessToken);
+
+//           // Retry original request with new access token
+//           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+//           return api(originalRequest);
+//         } catch (refreshError) {
+//           console.error("Refresh token invalid:", refreshError);
+//         }
+//       }
+//     }
+
+//     return Promise.reject(error);
+//   }
+// );
 
 export default api
 

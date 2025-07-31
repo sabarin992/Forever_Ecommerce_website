@@ -122,7 +122,8 @@ urlpatterns = [
     path('get-product-colors/',views.get_product_colors),
 
     path('logout/',views.logout),
-    path('check-auth/',views.check_auth)
+    path('check-auth/',views.check_auth),
+    path('check-admin-auth/',views.check_admin_auth),
 
   
 

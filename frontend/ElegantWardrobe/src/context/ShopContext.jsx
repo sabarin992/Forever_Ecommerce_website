@@ -130,7 +130,7 @@ const ShopContextProvider = (props) => {
         setWishListItems(res.data.wishlist_data);
         setWishListCount(res.data.wishlist_count);
       } catch (error) {
-        console.log(error);
+     
       }
     };
     getWishListItems();
@@ -142,7 +142,7 @@ const ShopContextProvider = (props) => {
       setIsRomoveCartItem(!isRomoveCartItem);
       toast.success(res.data);
     } catch (error) {
-      console.log(error.message);
+     
     }
   };
 

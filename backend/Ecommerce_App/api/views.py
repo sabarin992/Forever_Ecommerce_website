@@ -266,7 +266,6 @@ def login(request):
 @authentication_classes([JWTCookieAuthentication])    
 
 def logout(request):
-    print('logout')
     response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
 
     # Clear cookies by setting max_age to 0
@@ -289,6 +288,7 @@ def logout(request):
 @authentication_classes([])
 @permission_classes([AllowAny])
 def refresh_token(request):
+    print('refresh token')
     refresh_token = request.COOKIES.get('refresh_token')
 
     if not refresh_token:
@@ -318,40 +318,29 @@ def refresh_token(request):
         return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-# @api_view(['POST'])
-# @permission_classes([AllowAny])
-# def login(request):
-#     if request.method == "POST":
-#         email = request.data.get("email")
-#         password = request.data.get("password")
-#         try:
-#             user = CustomUser.objects.get(email=email)
-#         except CustomUser.DoesNotExist:
-#             return Response({'error':'Invalid Email'},status=status.HTTP_400_BAD_REQUEST)
-        
-#         if not check_password(password,user.password):
-#             return Response({'error':'Invalid Password'},status=status.HTTP_400_BAD_REQUEST)
-#         user = authenticate(email=email, password=password)
-        
-#         if user is not None:
-#             refresh = RefreshToken.for_user(user)
-#             return Response({
-#                 "refresh": str(refresh),
-#                 "access": str(refresh.access_token),
-#             }, status=status.HTTP_200_OK)
-
-#         return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([AllowAny]) 
+@authentication_classes([])
 def admin_login(request):
     email = request.data.get('email')
     password = request.data.get('password')
     if not email or not password:
         return Response({'error': 'Email and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+    
+    # Validate email
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        return Response({'error': 'Invalid Email'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    if not check_password(password, user.password):
+        return Response({'error': 'Invalid Password'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    
     user = authenticate(email=email, password=password)
 
     if user is None:
@@ -360,14 +349,44 @@ def admin_login(request):
     if not user.is_staff:
         return Response({'error': 'You are not authorized to access the admin panel.'}, status=status.HTTP_403_FORBIDDEN)
     
-    print(email,password)
 
+    # Generate JWT tokens
     refresh = RefreshToken.for_user(user)
-    return Response({
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
-        'email': user.email
-    }, status=status.HTTP_200_OK)  
+    access_token = str(refresh.access_token)
+    refresh_token = str(refresh)
+
+    # Create response
+    response = Response({
+        "message": "Login successful",
+        "user": {"email": user.email},  # Add user info if needed
+    }, status=status.HTTP_200_OK)
+
+    # Set HTTP-only cookies
+    response.set_cookie(
+        key='access_token',
+        value=access_token,
+        httponly=True,  # Prevent JavaScript access
+        secure=True,    # Use HTTPS in production
+        samesite='None',  # Prevent CSRF
+        max_age=3600    # Access token expiry (e.g., 1 hour)
+    )
+    response.set_cookie(
+        key='refresh_token',
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite='None',
+        max_age=7 * 24 * 3600  # Refresh token expiry (e.g., 7 days)
+    )
+
+    return response
+
+    # refresh = RefreshToken.for_user(user)
+    # return Response({
+    #     'refresh': str(refresh),
+    #     'access': str(refresh.access_token),
+    #     'email': user.email
+    # }, status=status.HTTP_200_OK)  
 
 
 # google login
@@ -376,7 +395,8 @@ def admin_login(request):
 User = get_user_model()
 
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+@permission_classes([AllowAny]) 
+@authentication_classes([])
 def google_login(request):
     token = request.data.get('token')  # Get token from request body
     if not token:
@@ -410,12 +430,44 @@ def google_login(request):
 
 
 
+        
+
+        response = Response({
+                "message": "Login successful",
+                "user": {"email": user.email},  # Add user info if needed
+            }, status=status.HTTP_200_OK)
+        
+        
         # Generate JWT token
         refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_200_OK)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
+        # Set HTTP-only cookies
+        response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=True,  # Prevent JavaScript access
+            secure=True,    # Use HTTPS in production
+            samesite='None',  # Prevent CSRF
+            max_age=3600    # Access token expiry (e.g., 1 hour)
+        )
+        response.set_cookie(
+            key='refresh_token',
+            value=refresh_token,
+            httponly=True,
+            secure=True,
+            samesite='None',
+            max_age=7 * 24 * 3600  # Refresh token expiry (e.g., 7 days)
+        )
+
+        return response
+
+
+        # return Response({
+        #     'refresh': str(refresh),
+        #     'access': str(refresh.access_token),
+        # }, status=status.HTTP_200_OK)
 
     except ValueError as e:
         return Response({'error': f'Invalid token: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
@@ -803,7 +855,6 @@ def filter_product(request):
     min_price = request.GET.get('minPrice')
     max_price = request.GET.get('maxPrice')
 
-    print(f'min_price = {min_price} and max_price = {max_price}')
 
 
     # Subquery: get one variant per product
@@ -831,7 +882,6 @@ def filter_product(request):
 
     if min_price and max_price:
         products = products.filter(final_price__gte = min_price,final_price__lte = max_price)
-        print(products)
 
     # Step 4: Apply sorting if provided
     if sort:
@@ -860,7 +910,7 @@ def filter_product(request):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def product_details(request,id):
     size = request.GET.get('size')
     color = request.GET.get('color')
@@ -957,7 +1007,7 @@ def edit_user(request,id):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def get_all_categories(request):
     print(request.user)
     search = request.GET.get("search")
@@ -2393,7 +2443,9 @@ def generate_pdf_report(report_data):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def coupon_list(request):
+    print('coupon')
     """
     List all coupons or create a new coupon
     """
@@ -2626,4 +2678,10 @@ def get_product_colors(request):
 @api_view(['GET'])
 @authentication_classes([JWTCookieAuthentication])
 def check_auth(request):
+    return Response({"message": "Authenticated"}, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def check_admin_auth(request):
     return Response({"message": "Authenticated"}, status=200)

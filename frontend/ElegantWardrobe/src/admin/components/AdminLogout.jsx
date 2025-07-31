@@ -2,15 +2,21 @@
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ADMIN_ACCESS_TOKEN, ADMIN_REFRESH_TOKEN } from '@/constants';
+import api from '@/api';
 
 const AdminLogout = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem(ADMIN_ACCESS_TOKEN);
-    localStorage.removeItem(ADMIN_REFRESH_TOKEN);
-    toast.success('Logged out successfully');
-    navigate('/admin-login');
+  const handleLogout = async() => {
+    try {
+      const res = await api.post('/logout/')
+        toast.success('Logged out successfully');
+        navigate('/admin-login');
+    } catch (error) {
+      console.log(error);
+      
+    }
+   
   };
 
   return (

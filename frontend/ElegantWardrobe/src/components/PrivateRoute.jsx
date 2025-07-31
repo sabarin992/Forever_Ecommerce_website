@@ -27,9 +27,10 @@ const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   console.log('privateRoute');
-  
+  console.log('isAuthenticated =',isAuthenticated);
 
   useEffect(() => {
+    
     const checkAuth = async () => {
       try {
         await api.get("/check-auth/");  // A simple API endpoint to verify token
