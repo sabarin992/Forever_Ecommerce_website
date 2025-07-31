@@ -3,19 +3,24 @@ import { assets } from "../assets/assets";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { USER_ACCESS_TOKEN,USER_REFRESH_TOKEN } from "../constants";
+import api from "@/api";
 
 const Navbar = () => {
   const [visisble, setVisible] = useState(false);
   const { setShowSearch, cartCount,wishListCount } = useContext(ShopContext);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem(USER_ACCESS_TOKEN);
-    localStorage.removeItem(USER_REFRESH_TOKEN);
-    navigate("/login");
+  const handleLogout = async() => {
+    try {
+      const res = await api.post('/logout/')
+      navigate('/login')
+    } catch (error) {
+      console.log('error in logout');
+      
+    }
   };
 
-  const token = localStorage.getItem(USER_ACCESS_TOKEN)
+  
   
 
   return (
@@ -51,8 +56,7 @@ const Navbar = () => {
           alt=""
         />
         
-        {
-        token?
+       
           <div className="group relative">
           <Link to="/login">
             <img
@@ -83,8 +87,7 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-        :null
-      }
+     
        
         <Link to="/wishlist" className="relative">
           <svg

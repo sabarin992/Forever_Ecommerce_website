@@ -270,8 +270,16 @@ def logout(request):
     response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
 
     # Clear cookies by setting max_age to 0
-    response.delete_cookie('access_token')
-    response.delete_cookie('refresh_token')
+    response.delete_cookie(
+        key='access_token',
+        path='/',  # default path used during set_cookie 
+        samesite = 'None'
+    )
+    response.delete_cookie(
+        key='refresh_token',
+        path='/',
+        samesite = 'None'
+        )
 
     return response
 
