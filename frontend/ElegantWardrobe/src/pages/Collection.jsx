@@ -1,5 +1,4 @@
 "use client";
-
 import { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
@@ -45,7 +44,7 @@ const Collection = () => {
   const applyFilter = async () => {
     const productCopy = products.slice();
 
-      const res = await api.get("filter_product", {
+      const res = await api.get("/filter_product/", {
         params: {
           search: search?search:'',
           category: selectedCategories.join(",")?selectedCategories.join(","):'',
@@ -70,7 +69,7 @@ const Collection = () => {
 
     switch (sortType) {
       case "low-high":
-        var res1 = await api.get("filter_product", {
+        var res1 = await api.get("/filter_product/", {
           params: {
             category: selectedCategories.join(","),
             search: search,
@@ -85,7 +84,7 @@ const Collection = () => {
         break;
 
       case "high-low":
-        var res2 = await api.get("filter_product", {
+        var res2 = await api.get("/filter_product/", {
           params: {
             category: selectedCategories.join(","),
             search: search,
@@ -100,7 +99,7 @@ const Collection = () => {
         break;
 
       case "a_to_z":
-        var res3 = await api.get("filter_product", {
+        var res3 = await api.get("/filter_product/", {
           params: {
             category: selectedCategories.join(","),
             search: search,
@@ -115,7 +114,7 @@ const Collection = () => {
         break;
 
       case "z_to_a":
-        var res4 = await api.get("filter_product", {
+        var res4 = await api.get("/filter_product/", {
           params: {
             category: selectedCategories.join(","),
             search: search,
@@ -145,7 +144,7 @@ const Collection = () => {
 
   useEffect(() => {
     const getAllListedCategories = async () => {
-      const res = await api.get("get_all_listed_categories");
+      const res = await api.get("/get_all_listed_categories/");
       setAllCategories(res.data.categories);
     };
 

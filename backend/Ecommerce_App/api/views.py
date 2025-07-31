@@ -975,7 +975,7 @@ def get_all_categories(request):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def get_all_listed_categories(request):
     categories = Category.objects.filter(is_active = True)
     categories_list = [category.name.capitalize() for category in categories]
