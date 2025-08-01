@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!s15d&=8vympv+-8#rc#+)8lxs887ry&*xe7051s*3w6zr8g3('
+SECRET_KEY = config('SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -149,10 +149,6 @@ CORS_ALLOWED_ORIGINS = [
 # Allow cookies to be sent
 CORS_ALLOW_CREDENTIALS = True
 
-# # Secure cookies
-# CSRF_COOKIE_SECURE = False  # True in production (with HTTPS)
-# SESSION_COOKIE_SECURE = False  # True in production
-
 
 # media
 # ====
@@ -173,30 +169,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
-
-
-# SIMPLE_JWT = {
-#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),  # Access token expires in 15 minutes
-#     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Refresh token expires in 7 days
-#     "ROTATE_REFRESH_TOKENS": True,  # Generates a new refresh token when refreshing access token
-#     "BLACKLIST_AFTER_ROTATION": True,  # Blacklists old refresh tokens after rotation
-#     "ALGORITHM": "HS256",  # Algorithm used to sign the token
-#     "SIGNING_KEY": SECRET_KEY,  # Secret key used to sign JWTs
-#     "AUTH_HEADER_TYPES": ("Bearer",),  # Authorization header type (default is 'Bearer')
-# }
-
-
-
-# SIMPLE_JWT = {
-#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),  # Access token expires in 15 minutes
-#     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Refresh token expires in 7 days
-#     "ROTATE_REFRESH_TOKENS": False,  # Generates a new refresh token when refreshing access token
-#     "BLACKLIST_AFTER_ROTATION": False,  # Blacklists old refresh tokens after rotation
-#     "ALGORITHM": "HS256",  # Algorithm used to sign the token
-#     "SIGNING_KEY": SECRET_KEY,  # Secret key used to sign JWTs
-#     "AUTH_HEADER_TYPES": ("Bearer",),  # Authorization header type (default is 'Bearer')
-# }
-
 
 
 # google authentication
@@ -220,7 +192,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 
 
 
-
 RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID')
 RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET')
 
@@ -230,18 +201,14 @@ RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET')
 
 
 cloudinary.config(
-    cloud_name='drukv2wvr',  # Replace with your Cloudinary cloud name
-    api_key='159976749372248',        # Replace with your API key
-    api_secret='qFTRAY_W8C4o1G6BJ75xJS_J_ho'   # Replace with your API secret
+    cloud_name=config('CLOUD_NAME'),  # Replace with your Cloudinary cloud name
+    api_key=config('API_KEY'),        # Replace with your API key
+    api_secret=config('API_SECRET')  # Replace with your API secret
 )
-
-# CLOUDINARY_STORAGE = {
-#     'CLOUD_NAME': 'drukv2wvr',
-#     'API_KEY': '159976749372248',
-#     'API_SECRET': 'qFTRAY_W8C4o1G6BJ75xJS_J_ho'
-# }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MEDIA_URL = '/media/'  # URL path for media files
+
+
 

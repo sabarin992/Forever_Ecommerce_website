@@ -1089,6 +1089,7 @@ def user_profile(request):
     user_data = {
         "id":user.id,
         "profile_picture": request.build_absolute_uri(user.profile_picture.url) if user.profile_picture else None,
+        # "profile_picture": user.profile_picture,
         "address": {
                     "city":address.city if address.city else '',
                     "state":address.state if address.state else '',

@@ -5,6 +5,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from decimal import Decimal,ROUND_HALF_UP
 from django.core.validators import MinValueValidator, MaxValueValidator
+import cloudinary
+from cloudinary.models import CloudinaryField
 
 
 # Custom User
@@ -31,7 +33,7 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     # profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
-    profile_picture = models.URLField(default="https://via.placeholder.com/150")
+    profile_picture = CloudinaryField('image')
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
