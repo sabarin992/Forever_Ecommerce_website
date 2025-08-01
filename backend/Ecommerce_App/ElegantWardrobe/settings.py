@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 from datetime import timedelta
 from decouple import config
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +48,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'api',
     'corsheaders',
+    'cloudinary',
+    'cloudinary_storage',
+
 ]
 
 MIDDLEWARE = [
@@ -153,8 +159,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 
-MEDIA_URL = '/media/'  # URL path for media files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Folder to store uploaded files
 
 
 # jwt configuration
@@ -219,4 +223,25 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 
 RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID')
 RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET')
+
+
+# cloudinary configurations
+# =========================
+
+
+cloudinary.config(
+    cloud_name='drukv2wvr',  # Replace with your Cloudinary cloud name
+    api_key='159976749372248',        # Replace with your API key
+    api_secret='qFTRAY_W8C4o1G6BJ75xJS_J_ho'   # Replace with your API secret
+)
+
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': 'drukv2wvr',
+#     'API_KEY': '159976749372248',
+#     'API_SECRET': 'qFTRAY_W8C4o1G6BJ75xJS_J_ho'
+# }
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+MEDIA_URL = '/media/'  # URL path for media files
 

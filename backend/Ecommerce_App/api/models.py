@@ -30,7 +30,8 @@ class CustomUserManager(BaseUserManager):
         return user
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    # profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    profile_picture = models.URLField(default="https://via.placeholder.com/150")
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -151,7 +152,7 @@ class ProductVariant(models.Model):
 class ProductImage(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name="product_image")
     variant = models.ForeignKey(ProductVariant,on_delete=models.SET_NULL,null=True,blank=True,related_name="variant_images")
-    image = models.ImageField(upload_to="images")
+    image = models.ImageField(upload_to="product_images")
     is_primary = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
