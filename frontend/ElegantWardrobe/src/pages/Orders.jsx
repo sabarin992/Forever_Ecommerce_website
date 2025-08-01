@@ -20,7 +20,7 @@ const [isLoading, setIsLoading] = useState(true);
    const getOrders = async()=>{
     try {
       setIsLoading(true);
-      const res = await api.get('get_all_orders',{params:{page:activePage}});
+      const res = await api.get('/get_all_orders/',{params:{page:activePage}});
       setOrders(res.data.results)
       setHasNext(res.data.has_next)
       setHasPrevious(res.data.has_previous)
