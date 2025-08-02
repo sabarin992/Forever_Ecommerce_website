@@ -263,7 +263,7 @@ def login(request):
 
 
 @api_view(['POST'])
-@authentication_classes([JWTCookieAuthentication])    
+@permission_classes([IsAuthenticated])    
 
 def logout(request):
     response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
@@ -493,7 +493,7 @@ def register(request):
 # add product view
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def add_product(request):
     print(f'User = {request.user}')
     data = request.data
@@ -556,7 +556,7 @@ def add_product(request):
 # for edit product
 
 @api_view(['PUT','GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def edit_product(request,id):
     product_variant = ProductVariant.objects.get(pk = id)
 
@@ -760,7 +760,7 @@ def verify_otp(request):
 
 # To get all products where the product is active and not deleted,
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def get_products(request):
     products = ProductVariant.objects.filter(product__is_active = True,product__is_deleted = False,is_active = True)    
     product_data = [
@@ -790,7 +790,7 @@ def get_products(request):
 
 # To get all products for admin
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def get_all_products(request):
     search = request.GET.get("search")
 
@@ -837,7 +837,7 @@ def get_all_products(request):
 
 # for list or unlist product
 @api_view(['PUT'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def list_unlist_product(request,id):
     
     product = ProductVariant.objects.get(pk = id)
@@ -847,7 +847,7 @@ def list_unlist_product(request,id):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def filter_product(request):
     categories = request.GET.get("category")  # List of categories
     search = request.GET.get("search")  # Search query
@@ -948,7 +948,7 @@ def product_details(request,id):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def related_products(request,id):
     product = ProductVariant.objects.get(pk = id)
     
@@ -965,7 +965,7 @@ def related_products(request,id):
 
 # for get all users
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def get_all_users(request):
     search = request.GET.get("search")  # Search query
     users = CustomUser.objects.filter(first_name__icontains=search,is_staff = False).order_by('-created_at') if search else CustomUser.objects.filter(is_staff = False).order_by('-created_at')
@@ -979,7 +979,7 @@ def get_all_users(request):
 
 # for block and unblock user
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def block_unblock_user(request,id):
     user = CustomUser.objects.get(pk = id)
     user.is_active = False if user.is_active else True
@@ -995,7 +995,7 @@ def block_unblock_user(request,id):
 
 # for edit user
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def edit_user(request,id):
     user = CustomUser.objects.get(pk = id)
     user.first_name = request.data["first_name"]
@@ -1044,7 +1044,7 @@ def get_all_listed_categories(request):
 
 
 @api_view(['PUT'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def list_unlist_category(request, id):
     category = Category.objects.get(pk=id)
     category.is_active = not category.is_active
@@ -1054,7 +1054,7 @@ def list_unlist_category(request, id):
 
 
 @api_view(['PUT'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def edit_category(request, id):
     category = Category.objects.get(pk=id)
     name = request.data["name"]
@@ -1071,7 +1071,7 @@ def edit_category(request, id):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def add_category(request):
     name = request.data["name"]
     if Category.objects.filter(name__iexact=name).exists():
@@ -1632,6 +1632,9 @@ def cancel_order_item(request, id):
 
     except OrderItem.DoesNotExist:
         return Response({'error': 'Order item not found.'}, status=status.HTTP_404_NOT_FOUND)
+    except ValueError:
+        print('valuue error')
+        return HttpResponse('success')
     
 
 @api_view(['PUT'])
@@ -1671,6 +1674,7 @@ def update_order_status(request, id):
 # api for create order using razor pay
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_order(request):
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
     amount = request.data.get('totalAmount')  # in rupees
@@ -1695,6 +1699,7 @@ def create_order(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def verify_payment(request):
     try:
         razorpay_order_id = request.data.get('order_id')
@@ -1804,6 +1809,7 @@ def verify_retry_payment(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def return_order_item(request, order_item_id):
     try:
         order_item = OrderItem.objects.get(pk=order_item_id)
@@ -1867,6 +1873,7 @@ def return_reasons(request,order_item_id):
 
 # api for approve or reject the returned item
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def handle_return_approval(request, order_item_id):
     try:
         order_item = OrderItem.objects.get(id=order_item_id)
@@ -1912,7 +1919,6 @@ def handle_return_approval(request, order_item_id):
 
 
 
-from .models import Coupon, CouponUsage
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -1949,6 +1955,7 @@ def apply_coupon(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def remove_coupon(request):
     code = request.data.get('code')
 
@@ -1967,7 +1974,7 @@ def remove_coupon(request):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def get_all_valid_coupons(request):
     coupons = Coupon.objects.filter(active=True, valid_to__gte=datetime.now())
     coupons_data = [
@@ -2466,6 +2473,7 @@ def coupon_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def coupon_detail(request, pk):
     """
     Retrieve, update or delete a coupon
@@ -2493,6 +2501,7 @@ def coupon_detail(request, pk):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def best_selling_products(request):
     # Get Top 10 best selling products
     top_selling_products = Product.objects.annotate(
@@ -2515,6 +2524,7 @@ def best_selling_products(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def best_selling_categories(request):
     top_selling_categories = Category.objects.annotate(
         total_quantity_sold=Sum('products__variants__orderitem__quantity'),
@@ -2610,11 +2620,13 @@ def reset_forgot_password(request):
 class ProductOfferViewSet(viewsets.ModelViewSet):
     queryset = ProductOffer.objects.all()
     serializer_class = ProductOfferSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class CategoryOfferViewSet(viewsets.ModelViewSet):
     queryset = CategoryOffer.objects.all()
     serializer_class = CategoryOfferSerializer
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -2655,6 +2667,7 @@ class AddReviewView(generics.CreateAPIView):
 # 🔹 List Reviews for a Product Variant
 class ListReviewView(generics.ListAPIView):
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         product_variant_id = self.kwargs['product_variant_id']
@@ -2677,12 +2690,12 @@ def get_product_colors(request):
 
 
 @api_view(['GET'])
-@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
 def check_auth(request):
     return Response({"message": "Authenticated"}, status=200)
 
 
 @api_view(['GET'])
-@permission_classes([IsAdminUser])
+@permission_classes([IsAuthenticated])
 def check_admin_auth(request):
     return Response({"message": "Authenticated"}, status=200)
