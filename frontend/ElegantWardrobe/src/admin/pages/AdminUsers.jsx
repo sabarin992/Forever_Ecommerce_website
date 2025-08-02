@@ -51,45 +51,6 @@ export default function AdminUsers() {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-normal text-center mb-8">Users</h1>
 
-      {/* Filter Section */}
-      <div className="flex mb-6 max-w-md">
-        <div className="bg-[#f0f5f5] rounded-l-lg flex items-center justify-center px-4 py-3 border border-r-0 border-gray-200">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
-            />
-          </svg>
-        </div>
-        <div className="bg-[#f0f5f5] px-4 py-3 border border-gray-200 flex items-center">
-          <span className="text-gray-700">Filter By</span>
-        </div>
-        <div className="bg-[#f0f5f5] rounded-r-lg flex-1 px-4 py-3 border border-l-0 border-gray-200 flex items-center justify-between">
-          <span>{filterValue}</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m19.5 8.25-7.5 7.5-7.5-7.5"
-            />
-          </svg>
-        </div>
-      </div>
       <SearchComponent />
 
       {/* Users Table */}
