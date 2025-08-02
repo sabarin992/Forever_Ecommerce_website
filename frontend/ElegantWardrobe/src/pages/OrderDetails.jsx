@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import InvoicePDF from "@/components/InvoicePDF";
 import ReturnOrderModal from "@/components/ReturnOrder";
+import ConfirmModal from "@/ConfirmModal";
 
 const OrderDetails = () => {
   const [orderDetails, setOrderDetails] = useState({});
@@ -17,6 +18,8 @@ const OrderDetails = () => {
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [orderItemId, setOrderItemId] = useState(0);
   const [isRetryingPayment, setIsRetryingPayment] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [selectedOrderId,setselectedOrderId] = useState(null)
 
   useEffect(() => {
     const getOrderDetails = async () => {
@@ -168,11 +171,12 @@ const OrderDetails = () => {
     }
   };
 
-  const cancelOrderItem = async (id) => {
+  const cancelOrderItem = async () => {
     try {
-      const res = await api.put(`/cancel_order_item/${id}/`);
+      const res = await api.put(`/cancel_order_item/${selectedOrderId}/`);
       toast.success(res.data.message);
       setIsChangeOrderItem(!isChangeOrderItem);
+      setIsCancelModalOpen(false)
     } catch (error) {
       toast.error(error?.response?.data?.error);
     }
@@ -297,7 +301,8 @@ const OrderDetails = () => {
                   ) : item.status === "PENDING" ? (
                     <button
                       onClick={() => {
-                        cancelOrderItem(item.item_id);
+                        setIsCancelModalOpen(true)
+                        setselectedOrderId(item.item_id)
                       }}
                       className="mt-2 px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
                     >
@@ -453,6 +458,12 @@ const OrderDetails = () => {
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={cancelOrderItem}
+        message="Are you sure to want to cancel this item?"
+      />
     </>
   );
 };
