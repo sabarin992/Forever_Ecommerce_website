@@ -445,7 +445,7 @@ class Wallet(models.Model):
         """
         if amount <= 0:
             raise ValueError("Amount must be positive for credit.")
-        self.balance += amount
+        self.balance += Decimal(str(amount))
         self.save()
         self.transactions.create(
             transaction_type='credit',
