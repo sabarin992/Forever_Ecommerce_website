@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Edit, Trash } from "lucide-react";
 import { toast } from 'react-toastify';
+import ConfirmModal from '@/ConfirmModal';
 
 const CategoryOfferPage = () => {
 
@@ -10,6 +11,10 @@ const CategoryOfferPage = () => {
    const [categories,setCategories] = useState([])
    const [isChangeOffer,setIsChangeOffer] = useState(false) 
    const navigate = useNavigate()
+
+     const [isModalOpen, setIsModalOpen] = useState(false);
+     const [modalMessage, setModalMessage] = useState("");
+     const [offerId, setOfferId] = useState(null);
 
    useEffect(()=>{
     const getOffers = async()=>{
@@ -39,6 +44,12 @@ const CategoryOfferPage = () => {
         
       }
 
+   }
+
+
+   const confirmRemoveCategoryOffer = ()=>{
+      removeCategoryOffer(offerId)
+      setIsModalOpen(false)
    }
 
 
@@ -80,14 +91,14 @@ const CategoryOfferPage = () => {
                   </button>
                   <button
                     className="p-2 bg-red-100 text-red-700 rounded-md"
-                    onClick={() => {
-                      if (window.confirm("Are you sure you want to delete this offer?")) {
-                        // Call delete function here
-                        console.log("Deleting offer with ID:", offer.id);
-                      }
+                    onClick={()=>{
+                      setModalMessage('Are you sure to want to delete this category offer')
+                      setIsModalOpen(true)
+                      setOfferId(offer.id)
+                      // removeCategoryOffer(offer.id)
                     }}
                   >
-                    <Trash className="h-4 w-4" onClick={()=>{removeCategoryOffer(offer.id)}} />
+                    <Trash className="h-4 w-4"/>
                   </button>
                 </div>
               </td>
@@ -95,6 +106,12 @@ const CategoryOfferPage = () => {
           ))}
         </tbody>
       </table>
+      <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={confirmRemoveCategoryOffer}
+          message={modalMessage}
+        />
     </div>
     </>
   )
