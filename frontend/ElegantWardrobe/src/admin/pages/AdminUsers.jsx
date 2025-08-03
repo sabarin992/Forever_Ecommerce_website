@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SearchComponent from "../components/SearchComponent";
 import { SearchContext } from "../../context/SearchContextProvider";
 import Pagination from "../../components/Pagination";
+import ConfirmModal from "@/ConfirmModal";
 
 export default function AdminUsers() {
   const [filterValue, setFilterValue] = useState("blocked");
@@ -17,6 +18,11 @@ export default function AdminUsers() {
   const [hasNext, setHasNext] = useState(false);
   const [hasPrevious, setHasPrevious] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
+  const [isModalOpen,setIsModalOpen] = useState(false)
+  const [modalMessage,setModalMessage] = useState('')
+  const [userId,setUserId] = useState(null)
+
+
 
   useEffect(() => {
     const getUsers = async () => {
@@ -37,15 +43,20 @@ export default function AdminUsers() {
 
 
 
-  const toggleBlockStatus = async (userId) => {
+  const toggleBlockStatus = async (id) => {
     try {
-      const res = await adminApi.get(`/block_unblock_user/${userId}/`);
+      const res = await adminApi.get(`/block_unblock_user/${id}/`);
       setUsers(res.data.results);
         setHasNext(res.data.has_next)
         setHasPrevious(res.data.has_previous)
         setTotalPages(res.data.total_pages)
     } catch (error) {}
   };
+
+  const toggleConfirmBlockStatus = ()=>{
+    toggleBlockStatus(userId)
+    setIsModalOpen(false)
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -115,15 +126,13 @@ export default function AdminUsers() {
                   <button
                     onClick={() => {
                       if (user.is_active) {
-                        window.confirm(
-                          `Are you sure you want to block this user?`
-                        );
+                       setModalMessage('Are you sure you want to block this user?')
                       } else {
-                        window.confirm(
-                          `Are you sure you want to unblock this user?`
-                        );
+                       setModalMessage('Are you sure you want to unblock this user?')
                       }
-                      toggleBlockStatus(user.id);
+                       setUserId(user.id)
+                       setIsModalOpen(true)
+                      
                     }}
                     className={`flex items-center px-3 py-1.5 text-white ${
                       user.is_active
@@ -140,6 +149,12 @@ export default function AdminUsers() {
         </table>
       </div>
       <Pagination activePage={activePage} setActivePage = {setActivePage} hasNext={hasNext} hasPrevious = {hasPrevious} totalPages = {totalPages}/>
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={()=>setIsModalOpen(false)}
+        onConfirm={toggleConfirmBlockStatus}
+        message={modalMessage}
+      />
     </div>
   );
 }
