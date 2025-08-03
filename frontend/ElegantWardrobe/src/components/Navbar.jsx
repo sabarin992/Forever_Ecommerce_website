@@ -58,7 +58,7 @@ const Navbar = () => {
         
        
           <div className="group relative">
-          <Link to="/login">
+          <Link>
             <img
               className="w-5 cursor-pointer"
               src={assets.profile_icon}

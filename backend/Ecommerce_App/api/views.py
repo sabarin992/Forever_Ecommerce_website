@@ -841,8 +841,11 @@ def get_all_products(request):
 def list_unlist_product(request,id):
     
     product = ProductVariant.objects.get(pk = id)
+    # print(f'The product = {product.product.is_active}')
+    product.product.is_active = not product.product.is_active
     product.is_active = not product.is_active
     product.save()
+    product.product.save()
     return Response({'message': 'Product status updated successfully','isListed':product.is_active}, status=status.HTTP_200_OK)
 
 
@@ -868,7 +871,7 @@ def filter_product(request):
         variant_id=Subquery(first_variant_subquery.values('id')[:1])
     ).values_list('variant_id', flat=True)
 
-    products = ProductVariant.objects.filter(id__in=first_variants)
+    products = ProductVariant.objects.filter(id__in=first_variants,product__is_active = True)
     
 
     # Step 2: Filter by category if provided
@@ -1187,6 +1190,8 @@ def add_address(request):
     state = request.data["state"]
     pin_code = request.data["pin_code"]
     country = request.data["country"]
+
+
     
     address = Address.objects.create(
         user=user,

@@ -99,7 +99,7 @@ const AdminEditProduct = () => {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const res = await adminApi.get("get_all_listed_categories");
+        const res = await adminApi.get("/get_all_listed_categories/");
         setCategories(res.data.categories);
       } catch (error) {
         console.error("Error fetching categories:", error.message);
