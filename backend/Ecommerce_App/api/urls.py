@@ -117,6 +117,7 @@ urlpatterns = [
 
     path('add-review/', views.AddReviewView.as_view(), name='add-review'),
     path('reviews/<int:product_variant_id>/', views.ListReviewView.as_view(), name='list-reviews'),
+    path('get_total_rating/', views.get_total_rating),
 
 
     path('get-product-colors/',views.get_product_colors),

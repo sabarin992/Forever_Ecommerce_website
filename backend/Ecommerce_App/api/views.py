@@ -1417,8 +1417,12 @@ def place_order(request):
             order.status = 'PENDING'
     elif payment_method == "WALLET":
         wallet = Wallet.objects.get(user=user)
-        wallet.debit(order.final_amount, f'Order payment for {order.order_no}')
-        order.status = 'CONFIRMED'
+        try:
+            wallet.debit(order.final_amount, f'Order payment for {order.order_no}')
+            order.status = 'CONFIRMED'
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     else:  # COD
         order.status = payment_status if payment_status else 'PENDING'
             
@@ -2724,3 +2728,33 @@ def check_auth(request):
 @permission_classes([IsAuthenticated])
 def check_admin_auth(request):
     return Response({"message": "Authenticated"}, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_total_rating(request):
+    product_id = request.GET.get('product_id')
+    if not product_id:
+        return Response({'error': 'product_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        product_variant = ProductVariant.objects.get(id = product_id)
+    except ProductVariant.DoesNotExist:
+        return Response({'error': 'Invalid product_id'}, status=status.HTTP_404_NOT_FOUND)
+    product = product_variant.product
+
+    # Get all variants for the product
+    variants = ProductVariant.objects.filter(product = product)
+    # Get all reviews for these variants
+    reviews = Review.objects.filter(product_variant__in=variants)
+
+    total_reviews = reviews.count()
+    if total_reviews == 0:
+        return Response({'average_rating': 0, 'total_reviews': 0}, status=status.HTTP_200_OK)
+
+    total_rating = reviews.aggregate(total=Sum('rating'))['total'] or 0
+    average_rating = round(total_rating / total_reviews, 2)
+
+    return Response({'average_rating': round(average_rating,1), 'total_reviews': total_reviews}, status=status.HTTP_200_OK)
+
+

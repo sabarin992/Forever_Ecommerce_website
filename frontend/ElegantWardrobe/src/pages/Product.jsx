@@ -31,6 +31,8 @@ const Product = () => {
   const [variantId, setVariantId] = useState(null);
   const [productColors, setProductColors] = useState(null);
   const sizeOrder = ["S", "M", "L", "XL", "XXL"];
+  const [averageRating, setAverageRating] = useState(null);
+  const [totalReviews, settotalReviews] = useState(null);
 
   // Ref for the image container
   const imageContainerRef = useRef(null);
@@ -52,6 +54,25 @@ const Product = () => {
     };
     fetchProductData();
   }, [productId]);
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await api.get(`/get_total_rating/`, {
+          params: { product_id: productId },
+        });
+        console.log(res.data);
+        setAverageRating(res.data.average_rating);
+        settotalReviews(res.data.total_reviews);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setTimeout(() => setIsLoading(false), 800); // Add loading delay for smooth transition
+      }
+    };
+    fetchProductData();
+  }, []);
 
   // Handle mouse movement for direct zoom effect
   const handleMouseMove = (e) => {
@@ -267,12 +288,15 @@ const Product = () => {
                   {productData.name}
                 </h1>
                 <div className="flex items-center gap-4">
+                  {/* Star Rating Display */}
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
                         className={`w-5 h-5 ${
-                          i < 4 ? "text-yellow-400" : "text-gray-300"
+                          i < Math.round(averageRating)
+                            ? "text-yellow-400"
+                            : "text-gray-300"
                         }`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
@@ -281,12 +305,18 @@ const Product = () => {
                       </svg>
                     ))}
                   </div>
-                  <span className="text-gray-600 font-medium">
-                    {/* (122 reviews) */}
+
+                  {/* Styled Average Rating Badge */}
+                  <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    {averageRating} ★
                   </span>
-                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                    ⭐ Bestseller
-                  </span>
+
+                  {/* Optional Bestseller Tag */}
+                  {averageRating >= 4 ? (
+                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                      ⭐ Bestseller
+                    </span>
+                  ) : null}
                 </div>
               </div>
               {/* Price */}

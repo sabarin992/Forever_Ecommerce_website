@@ -105,7 +105,8 @@ const ShopContextProvider = (props) => {
           params: { page: activePage },
         });
         // console.log(res.data.cart_data);
-
+        console.log(res.data.cart_data.results);
+        
         setCartData(res.data.cart_data.results);
         setHasNext(res.data.cart_data.has_next);
         setHasPrevious(res.data.cart_data.has_previous);
