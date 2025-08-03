@@ -3,9 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ADMIN_ACCESS_TOKEN, ADMIN_REFRESH_TOKEN } from '@/constants';
 import api from '@/api';
+import ConfirmModal from '@/ConfirmModal';
+import { useState } from 'react';
 
 const AdminLogout = () => {
   const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
+
 
   const handleLogout = async() => {
     try {
@@ -20,9 +25,21 @@ const AdminLogout = () => {
   };
 
   return (
-    <button onClick={handleLogout}>
+    <>
+    <button onClick={()=>{
+      setIsModalOpen(true);
+      setModalMessage('Are you sure to want to Logout')
+    }}>
       Logout
     </button>
+     <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={()=>setIsModalOpen(false)}
+        onConfirm={handleLogout}
+        message={modalMessage}
+      />
+    
+    </>
   );
 }
 
