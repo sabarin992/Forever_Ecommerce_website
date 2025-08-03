@@ -1,25 +1,36 @@
+import { useContext, useEffect, useState } from "react";
+import { ShopContext } from "../context/ShopContext";
+import { Link } from "react-router-dom";
+import api from "@/api";
+import { toast } from "react-toastify";
+import ConfirmModal from "@/ConfirmModal";
 
-import { useContext, useEffect, useState } from "react"
-import { ShopContext } from "../context/ShopContext"
-import { Link } from "react-router-dom"
-import api from "@/api"
-import { toast } from "react-toastify"
+const ProductItem = ({
+  id,
+  image,
+  name,
+  finalPrice,
+  realPrice,
+  discountedPercentage,
+}) => {
+  const { currency, isChangeWishList, setIsChangeWishList } =
+    useContext(ShopContext);
+  const [isInWishlist, setIsInWishList] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
-const ProductItem = ({ id, image, name, finalPrice, realPrice, discountedPercentage }) => {
-  const { currency, isChangeWishList, setIsChangeWishList } = useContext(ShopContext)
-  const [isInWishlist, setIsInWishList] = useState(false)
-  const [imageLoading, setImageLoading] = useState(true)
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: "smooth",
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     if (!id) {
-      return
+      return;
     }
     const fetchWishlistStatus = async () => {
       try {
@@ -35,40 +46,55 @@ const ProductItem = ({ id, image, name, finalPrice, realPrice, discountedPercent
     fetchWishlistStatus();
   }, [id]);
 
+  const deleteFromWishList = async () => {
+    const res = await api.delete(`/remove_from_wishlist/${id}/`);
+    if (res.status === 200) {
+      setIsInWishList(false);
+      setIsChangeWishList(!isChangeWishList);
+      setIsModalOpen(false)
+    }
+  };
+
   const handleWishlistToggle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
       if (isInWishlist) {
-        const res = await api.delete(`/remove_from_wishlist/${id}/`);
-        if (res.status === 200) {
-          setIsInWishList(false);
-          setIsChangeWishList(!isChangeWishList)
-        }
+        setIsModalOpen(true)
+        setModalMessage('Are you sure to want to remove this item from WishList')
       } else {
-        const res = await api.post('/add_to_wishlist/', { product_variant_id: id });
-        
+        const res = await api.post("/add_to_wishlist/", {
+          product_variant_id: id,
+        });
+
         if (res.status === 201) {
           setIsInWishList(true);
-          setIsChangeWishList(!isChangeWishList)
+          setIsChangeWishList(!isChangeWishList);
         }
       }
     } catch (error) {
       setIsInWishList(false);
-      toast.error(error?.response?.data?.error)
+      toast.error(error?.response?.data?.error);
     }
   };
 
   const handleImageLoad = () => {
-    setImageLoading(false)
-  }
+    setImageLoading(false);
+  };
 
   return (
+    <>
+    <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={deleteFromWishList}
+        message={modalMessage}
+      />
     <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 ease-out transform hover:-translate-y-1 overflow-hidden border border-gray-100">
-      <Link 
-        onClick={scrollToTop} 
-        className="block cursor-pointer" 
+      <Link
+        onClick={scrollToTop}
+        className="block cursor-pointer"
         to={`/product/${id}`}
       >
         {/* Image Container */}
@@ -77,19 +103,19 @@ const ProductItem = ({ id, image, name, finalPrice, realPrice, discountedPercent
           {imageLoading && (
             <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse" />
           )}
-          
+
           <img
             className={`object-cover w-full h-full transition-all duration-700 ease-out group-hover:scale-110 ${
-              imageLoading ? 'opacity-0' : 'opacity-100'
+              imageLoading ? "opacity-0" : "opacity-100"
             }`}
             src={image || "/placeholder.svg"}
             alt={name}
             onLoad={handleImageLoad}
           />
-          
+
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* Discount Badge */}
           {discountedPercentage > 0 && (
             <div className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-full shadow-lg transform rotate-[-3deg] group-hover:rotate-0 transition-transform duration-300">
@@ -104,29 +130,30 @@ const ProductItem = ({ id, image, name, finalPrice, realPrice, discountedPercent
           <h3 className="font-medium text-gray-900 text-sm leading-relaxed line-clamp-2 group-hover:text-gray-700 transition-colors duration-200">
             {name}
           </h3>
-          
+
           {/* Price Section */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {finalPrice === 0?
-              <>
-              <span className="text-lg font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">
-                {currency} {realPrice}
-              </span>
-              </>:
-              <>
-              <span className="text-lg font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">
-                {currency} {finalPrice}
-              </span>
-              {realPrice && realPrice !== finalPrice && (
-                <span className="text-sm text-gray-400 line-through font-medium">
-                  {currency} {realPrice}
-                </span>
+              {finalPrice === 0 ? (
+                <>
+                  <span className="text-lg font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">
+                    {currency} {realPrice}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-lg font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">
+                    {currency} {finalPrice}
+                  </span>
+                  {realPrice && realPrice !== finalPrice && (
+                    <span className="text-sm text-gray-400 line-through font-medium">
+                      {currency} {realPrice}
+                    </span>
+                  )}
+                </>
               )}
-              </>
-              }
             </div>
-            
+
             {discountedPercentage > 0 && (
               <div className="bg-green-50 text-green-700 text-xs font-semibold px-2 py-1 rounded-md border border-green-200">
                 Save {discountedPercentage}%
@@ -179,12 +206,13 @@ const ProductItem = ({ id, image, name, finalPrice, realPrice, discountedPercent
 
       {/* Hover Effect Border */}
       <div className="absolute inset-0 rounded-2xl ring-1 ring-gray-200 group-hover:ring-gray-300 transition-all duration-300 pointer-events-none" />
+      
     </div>
-  )
-}
+    </>
+  );
+};
 
-export default ProductItem
-
+export default ProductItem;
 
 // "use client"
 
@@ -199,15 +227,13 @@ export default ProductItem
 //   const [isInWishlist,setIsInWishList] = useState(false)
 
 //   console.log(id);
-  
+
 //   const scrollToTop = () => {
 //     window.scrollTo({
 //       top: 0,
 //       behavior: "smooth",
 //     })
 //   }
-  
-
 
 //   useEffect(() => {
 //     if(!id){
@@ -231,7 +257,6 @@ export default ProductItem
 //     e.preventDefault(); // Prevent navigation when clicking the heart icon
 //     e.stopPropagation(); // prevent parent from receiving the click
 
-
 //     try {
 //       if (isInWishlist) {
 //         const res = await api.delete(`/remove_from_wishlist/${id}/`);
@@ -242,13 +267,13 @@ export default ProductItem
 //         }
 //       } else {
 //         const res = await api.post('/add_to_wishlist/', { product_variant_id: id });
-        
+
 //         if (res.status === 201) {
 //           setIsInWishList(true);
 //           setIsChangeWishList(!isChangeWishList)
 
 //         }
-        
+
 //       }
 //     } catch (error) {
 //       setIsInWishList(false);
