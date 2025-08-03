@@ -60,6 +60,7 @@ import AddCategoryOffer from "./admin/offer/pages/AddCategoryOffer";
 import EditCategoryOffer from "./admin/offer/pages/EditCategoryOffer";
 import AddReviewRating from "./pages/AddReviewRating";
 import Logout from "./pages/Logout";
+import Error404Page from "./Error404page";
 
 const App = () => {
   const [token, setToken] = useState("");
@@ -213,6 +214,7 @@ const App = () => {
 
         {/* Admin Login Route */}
         <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="*" element={<Error404Page />} />
       </Routes>
     </div>
   );

@@ -16,6 +16,7 @@ const AdminLogout = () => {
     try {
       const res = await api.post('/logout/')
         toast.success('Logged out successfully');
+        setIsModalOpen(false)
         navigate('/admin-login');
     } catch (error) {
       console.log(error);

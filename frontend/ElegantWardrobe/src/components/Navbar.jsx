@@ -2,26 +2,26 @@ import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
-import { USER_ACCESS_TOKEN,USER_REFRESH_TOKEN } from "../constants";
+import { USER_ACCESS_TOKEN, USER_REFRESH_TOKEN } from "../constants";
 import api from "@/api";
+import ConfirmModal from "@/ConfirmModal";
 
 const Navbar = () => {
   const [visisble, setVisible] = useState(false);
-  const { setShowSearch, cartCount,wishListCount } = useContext(ShopContext);
+  const { setShowSearch, cartCount, wishListCount } = useContext(ShopContext);
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     try {
-      const res = await api.post('/logout/')
-      navigate('/login')
+      const res = await api.post("/logout/");
+      setIsModalOpen(false)
+      navigate("/login");
     } catch (error) {
-      console.log('error in logout');
-      
+      console.log("error in logout");
     }
   };
-
-  
-  
 
   return (
     <div className="flex items-center justify-between py-5 font-medium">
@@ -55,9 +55,8 @@ const Navbar = () => {
           className="w-5 cursor-pointer "
           alt=""
         />
-        
-       
-          <div className="group relative">
+
+        <div className="group relative">
           <Link>
             <img
               className="w-5 cursor-pointer"
@@ -79,7 +78,10 @@ const Navbar = () => {
                 Orders
               </p>
               <p
-                onClick={handleLogout}
+                onClick={()=>{
+                  setIsModalOpen(true)
+                  setModalMessage('Are you sure to want to Logout')
+                }}
                 className="cursor-pointer hover:text-black"
               >
                 Logout
@@ -87,8 +89,7 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-     
-       
+
         <Link to="/wishlist" className="relative">
           <svg
             // onClick={onClick}
@@ -115,8 +116,6 @@ const Navbar = () => {
             {cartCount}
           </p>
         </Link>
-
-        
 
         <img
           onClick={() => {
@@ -182,6 +181,12 @@ const Navbar = () => {
           </NavLink>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleLogout}
+        message={modalMessage}
+      />
     </div>
   );
 };
