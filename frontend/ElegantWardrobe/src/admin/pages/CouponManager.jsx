@@ -67,7 +67,6 @@ const CouponManager = () => {
 
   // Delete coupon
   const handleDeleteCoupon = async (id) => {
-    if (window.confirm('Are you sure you want to delete this coupon?')) {
       try {
         await adminApi.delete(`/coupons/${id}/`);
         setCoupons(coupons.filter(coupon => coupon.id !== id));
@@ -75,7 +74,6 @@ const CouponManager = () => {
         setError('Failed to delete coupon');
         console.error('Error deleting coupon:', err);
       }
-    }
   };
 
   // Edit coupon
