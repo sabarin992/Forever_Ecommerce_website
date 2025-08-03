@@ -48,42 +48,6 @@ api.interceptors.response.use(
 
 
 
-// // Response Interceptor
-// api.interceptors.response.use( // Handle token expiration and refresh
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
-//     // console.log('original',originalRequest._retry);
-    
-//     // If token expired and not already retried
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-      
-//       originalRequest._retry = true;
-//       const refreshToken = localStorage.getItem(USER_REFRESH_TOKEN);
-
-//       if (refreshToken) {
-//         try {
-//           const res = await axios.post(`${API_BASE_URL}/token/refresh/`, {
-//             refresh: refreshToken,
-//           });
-          
-
-//           const newAccessToken = res.data.access;
-//           localStorage.setItem(USER_ACCESS_TOKEN, newAccessToken);
-
-//           // Retry original request with new access token
-//           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-//           return api(originalRequest);
-//         } catch (refreshError) {
-//           console.error("Refresh token invalid:", refreshError);
-//         }
-//       }
-//     }
-
-//     return Promise.reject(error);
-//   }
-// );
-
 
 // ----- Admin API Instance -----
 
@@ -104,7 +68,7 @@ adminApi.interceptors.response.use(
 
     // If 401 Unauthorized AND not already retried
     if (
-      error.response?.status === 401 &&
+      error.response?.status === 401 || error.response?.status === 403 &&
       !originalRequest._retry &&
       !originalRequest.url.includes("/token/refresh/")
     ) {
@@ -132,60 +96,6 @@ adminApi.interceptors.response.use(
   }
 );
 
-
-// // request interceptor
-// adminApi.interceptors.request.use( // Add access token to every request
-//   (config) => {
-//     const token = localStorage.getItem(ADMIN_ACCESS_TOKEN);
-//     console.log(token);
-    
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//       // console.log(config.headers.Authorization);
-      
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-
-
-// // Response Interceptor
-// adminApi.interceptors.response.use( // Handle token expiration and refresh
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
-//     // console.log('original',originalRequest._retry);
-    
-//     // If token expired and not already retried
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-      
-//       originalRequest._retry = true;
-//       const refreshToken = localStorage.getItem(ADMIN_REFRESH_TOKEN);
-
-//       if (refreshToken) {
-//         try {
-//           const res = await axios.post(`${API_BASE_URL}/token/refresh/`, {
-//             refresh: refreshToken,
-//           });
-//           console.log('response refresh',res);
-          
-
-//           const newAccessToken = res.data.access;
-//           localStorage.setItem(ADMIN_ACCESS_TOKEN, newAccessToken);
-
-//           // Retry original request with new access token
-//           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-//           return api(originalRequest);
-//         } catch (refreshError) {
-//           console.error("Refresh token invalid:", refreshError);
-//         }
-//       }
-//     }
-
-//     return Promise.reject(error);
-//   }
-// );
 
 export default api
 
