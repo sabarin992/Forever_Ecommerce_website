@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { assets } from "../admin_assets/assets";
 import axios from "axios";
-import { API_BASE_URL,adminApi } from "../../api";
+import { API_BASE_URL, adminApi } from "../../api";
 import { toast } from "react-toastify";
 import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import { ClipLoader } from "react-spinners";
 
 const AdminAdd = () => {
   const [product, setProduct] = useState({
@@ -37,6 +38,9 @@ const AdminAdd = () => {
       },
     ],
   });
+
+  // Loading state
+  const [loading, setLoading] = useState(false);
 
   // State for image cropping
   const [showCropModal, setShowCropModal] = useState(false);
@@ -323,7 +327,8 @@ const AdminAdd = () => {
       return;
     }
 
-    // Form is valid, now submit
+    // Form is valid, now submit with loading state
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("category", product.category);
@@ -404,6 +409,8 @@ const AdminAdd = () => {
       }
     } catch (error) {
       toast.error(error?.response?.data?.error || "Failed to add product");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -543,6 +550,15 @@ const AdminAdd = () => {
       y: 5,
     });
   };
+
+  // Show loader when loading
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <ClipLoader color="#000" size={40} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-3 relative">
