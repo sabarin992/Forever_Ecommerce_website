@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState, useRef, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
@@ -198,12 +198,12 @@ const Product = () => {
             Home
           </a>
           <span>/</span>
-          <a
-            href="/products"
+          <Link
+            to="/collection"
             className="hover:text-blue-600 transition-colors duration-200"
           >
             Products
-          </a>
+          </Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">{productData.name}</span>
         </nav>
