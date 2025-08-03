@@ -52,6 +52,8 @@ from decouple import config
 from rest_framework import generics
 from django.views.decorators.csrf import csrf_exempt
 from .authentication import JWTCookieAuthentication
+from cloudinary.uploader import upload
+from cloudinary.exceptions import Error as CloudinaryError
 
 
 
@@ -177,15 +179,31 @@ def get_users_data(request,users=None):
 
 
 
+# def save_image_from_url(image_url):
+#     try:
+#         response = req.get(image_url)
+#         if response.status_code == 200:
+#             filename = os.path.basename(urlparse(image_url).path)
+#             return ContentFile(response.content, name=filename)
+#     except Exception as e:
+#         pass
+#     return None
+
+
+
+
 def save_image_from_url(image_url):
     try:
         response = req.get(image_url)
         if response.status_code == 200:
-            filename = os.path.basename(urlparse(image_url).path)
-            return ContentFile(response.content, name=filename)
+            upload_result = upload(response.content)  # Upload to Cloudinary
+            return upload_result.get("public_id")  # Return Cloudinary identifier
+    except CloudinaryError as e:
+        print(f"Cloudinary upload error: {e}")
     except Exception as e:
-        pass
+        print(f"General error: {e}")
     return None
+
 
 # fn for generate order number
 
@@ -624,16 +642,18 @@ def edit_product(request,id):
             images = variant.get("images", [])
             for i, img in enumerate(images):  # images = list of image URLs
                 if isinstance(img, str) and (img.startswith("http://") or img.startswith("https://")):
-                    image_file = save_image_from_url(img)
+                    public_id = save_image_from_url(img)
                 else:
-                    image_file = img
-                if image_file:
+                    public_id = img  # Only if img is already a valid Cloudinary public_id string
+
+                if public_id:
                     ProductImage.objects.create(
                         product=product_variant.product,
                         variant=product_variant,
-                        image=image_file,
+                        image=public_id,  # ✅ CloudinaryField expects string
                         is_primary=(i == 0)
                     )
+
         
 
     return Response({'message': 'Product updated successfully'}, status=status.HTTP_200_OK)
