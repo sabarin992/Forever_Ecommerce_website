@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "@/components/Pagination";
 import { SearchContext } from "@/context/SearchContextProvider";
 import SearchComponent from "../components/SearchComponent";
+import ConfirmModal from "@/ConfirmModal";
 
 export default function AdminProducts() {
   const [date, setDate] = useState("14 Feb 2019");
@@ -21,6 +22,10 @@ export default function AdminProducts() {
   const [hasNext, setHasNext] = useState(false);
   const [hasPrevious, setHasPrevious] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
+
+    const [isModalOpen,setIsModalOpen] = useState(false)
+  const [modalMessage,setModalMessage] = useState('')
+  const [userId,setUserId] = useState(null)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -53,6 +58,11 @@ export default function AdminProducts() {
       }
     } catch (error) {}
   };
+
+  const handleConfirmationToggle = ()=>{
+    handleToggle(userId)
+    setIsModalOpen(false)
+  }
 
   return (
     <>
@@ -123,15 +133,14 @@ export default function AdminProducts() {
                       <button
                         onClick={() => {
                           if (product.listed) {
-                            window.confirm(
-                              `Are you sure you want to unlist this product?`
-                            );
+                            setModalMessage('Are you sure you want to unlist this product?')
                           } else {
-                            window.confirm(
-                              `Are you sure you want to list this product?`
-                            );
+                            setModalMessage('Are you sure you want to list this product?')
                           }
-                          handleToggle(product.id);
+                          setIsModalOpen(true)
+                          setUserId(product.id)
+
+                          
                         }}
                         className={`px-4 py-2 rounded-md ${
                           product.listed
@@ -155,6 +164,12 @@ export default function AdminProducts() {
         hasNext={hasNext}
         hasPrevious={hasPrevious}
         totalPages={totalPages}
+      />
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={()=>setIsModalOpen(false)}
+        onConfirm={handleConfirmationToggle}
+        message={modalMessage}
       />
     </>
   );
