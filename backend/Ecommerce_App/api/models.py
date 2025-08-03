@@ -204,7 +204,6 @@ class CartItem(models.Model):
     size = models.CharField(max_length=10, blank=True,null=True, default="")
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     total_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    # total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -213,14 +212,7 @@ class CartItem(models.Model):
         if self.quantity > 5:
             raise ValidationError("Maximum 5 items allowed per product variant.")
         if self.quantity > self.product_variant.stock_quantity:
-            print(f'cartitem quantity = {self.quantity}\nProduct_Variant_quantitys = {self.product_variant.stock_quantity}')
             raise ValidationError("Quantity exceeds available stock.")
-        # Use the get_discounted_price() method to calculate the price
-        # price_to_use = self.product_variant.final_price
-        # print(f'Price_to_use = {price_to_use}')
-        # # Calculate total amount
-        # self.total_amount = price_to_use*self.quantity
-
         self.total_price = self.product_variant.price * self.quantity
         self.total_discount = (self.product_variant.price * Decimal(str(self.product_variant.product_discount)) / 100) * self.quantity
         
@@ -498,13 +490,19 @@ class ProductOffer(models.Model):
 
     def is_valid(self):
         now = timezone.now()
-        print(f'valid_result = {self.active and self.valid_from <= now <= self.valid_to}')
         return self.active and self.valid_from <= now <= self.valid_to
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        print(self.product.variants.all())
         for variant in self.product.variants.all():
+            variant.update_discount()
+
+    def delete(self, *args, **kwargs):
+        product = self.product  # Store before deletion
+        super().delete(*args, **kwargs)
+        # After deleting product offer, apply category offer if exists
+        for variant in product.variants.all():
+            variant.refresh_from_db()  # Ensure fresh state
             variant.update_discount()
 
     def __str__(self):
@@ -526,7 +524,18 @@ class CategoryOffer(models.Model):
         super().save(*args, **kwargs)
         for product in self.category.products.all():
             for variant in product.variants.all():
+                variant.refresh_from_db()
                 variant.update_discount()
+    
+    def delete(self, *args, **kwargs):
+        category = self.category  # Store before deletion
+        super().delete(*args, **kwargs)
+        # After deleting category offer, apply product offer if exists
+        for product in category.products.all():
+            for variant in product.variants.all():
+                variant.refresh_from_db()  # Ensure fresh state
+                variant.update_discount()  # This will internally call calculate_discount()
+
 
     def __str__(self):
         return f"{self.category.name} - {self.discount_percentage}%"
