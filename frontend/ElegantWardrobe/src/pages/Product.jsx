@@ -143,6 +143,7 @@ const Product = () => {
   const handleSizeSelection = async (selectedSize, variantId) => {
     setSize(selectedSize);
     setVariantId(variantId);
+    setColor("");
 
     try {
       const res = await api.get("/get-product-colors/", {
@@ -283,13 +284,13 @@ const Product = () => {
               </div>
               {/* Price */}
               <div className="flex items-baseline gap-4">
-                {productData.discounted_amount != 0 ? (
+                {productData.discounted_amount != 0 && (productData.discounted_amount !== productData.price) ? (
                   <>
                     <span className="text-4xl lg:text-5xl font-bold text-gray-900">
                       {currency}
                       {productData.discounted_amount}
                     </span>
-                    <span className="text-2xl text-gray-400 line-through font-medium">
+                     <span className="text-2xl text-gray-400 line-through font-medium">
                       {currency}
                       {productData.price}
                     </span>

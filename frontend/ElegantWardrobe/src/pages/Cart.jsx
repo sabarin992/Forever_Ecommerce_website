@@ -285,7 +285,7 @@ const Cart = () => {
         isOpen={isModalOpen}
         onClose={()=>setIsModalOpen(false)}
         onConfirm={handleConfirmDeleteCartItem}
-        message="Are you sure you want to add this item to cart?"
+        message="Are you sure you want to delete this item from cart?"
       />
     </div>
   );
