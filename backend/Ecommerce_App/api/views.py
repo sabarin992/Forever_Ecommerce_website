@@ -285,8 +285,8 @@ def logout(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny]) 
 @authentication_classes([])
-@permission_classes([AllowAny])
 def refresh_token(request):
     print('refresh token')
     refresh_token = request.COOKIES.get('refresh_token')
@@ -987,7 +987,7 @@ def block_unblock_user(request,id):
     user = CustomUser.objects.get(pk = id)
     user.is_active = False if user.is_active else True
     user.save()
-    users = CustomUser.objects.all().order_by('-created_at')
+    users = CustomUser.objects.filter(is_staff = False).order_by('-created_at')
     data = paginate_queryset(users,5,request)
     users_data = get_users_data(request,users=data['products'])
     response = data['paginator'].get_paginated_response(users_data)
