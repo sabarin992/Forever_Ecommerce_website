@@ -102,6 +102,13 @@ const Product = () => {
 
   // function to add to wishlist
   const addToWishList = async (id) => {
+    if (!size) {
+      toast.error("Select the product size");
+      return;
+    } else if (!color) {
+      toast.error("Select the product color");
+      return;
+    }
     try {
       const res = await api.post("/add_to_wishlist/", {
         product_variant_id: id,
@@ -284,13 +291,14 @@ const Product = () => {
               </div>
               {/* Price */}
               <div className="flex items-baseline gap-4">
-                {productData.discounted_amount != 0 && (productData.discounted_amount !== productData.price) ? (
+                {productData.discounted_amount != 0 &&
+                productData.discounted_amount !== productData.price ? (
                   <>
                     <span className="text-4xl lg:text-5xl font-bold text-gray-900">
                       {currency}
                       {productData.discounted_amount}
                     </span>
-                     <span className="text-2xl text-gray-400 line-through font-medium">
+                    <span className="text-2xl text-gray-400 line-through font-medium">
                       {currency}
                       {productData.price}
                     </span>
