@@ -19,7 +19,7 @@ const PlaceOrder = () => {
   const [customer, setCustomer] = useState({});
   const [shipAddress, setShipAddress] = useState("");
   const [addresses, setAddresses] = useState([]);
-  const { totalPrice, totalDiscount, delivery_fee } = useContext(ShopContext);
+  const { totalPrice, totalDiscount, delivery_fee,isRomoveCartItem, setIsRomoveCartItem } = useContext(ShopContext);
   const [discount, setDiscount] = useState(null);
   const navigate = useNavigate();
   const [showCoupons, setShowCoupons] = useState(false);
@@ -200,6 +200,7 @@ const PlaceOrder = () => {
         "Order Placed",
         "Your order has been successfully placed!"
       );
+      setIsRomoveCartItem(!isRomoveCartItem)
       navigate("/order-success", {
         state: { orderId: res.data.order_id, discount: discount },
       });
@@ -287,6 +288,7 @@ const PlaceOrder = () => {
               "Order Placed",
               "Your order has been successfully placed!"
             );
+            setIsRomoveCartItem(!isRomoveCartItem)
             navigate("/order-success", {
               state: { orderId: res.data.order_id },
             });
