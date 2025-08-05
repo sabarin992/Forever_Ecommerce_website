@@ -870,7 +870,7 @@ def list_unlist_product(request,id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def filter_product(request):
     categories = request.GET.get("category")  # List of categories
     search = request.GET.get("search")  # Search query
@@ -933,7 +933,7 @@ def filter_product(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def product_details(request,id):
     size = request.GET.get('size')
     color = request.GET.get('color')
@@ -949,7 +949,8 @@ def product_details(request,id):
                 )
                 # Return the selected variant details
                 # print(selected_variant)
-                is_in_wishlist = Wishlist.objects.filter(user=request.user, product_variant=product).exists()
+                
+                is_in_wishlist = Wishlist.objects.filter(user=request.user, product_variant=product).exists() if not request.user.is_anonymous else False
                 # is_in_cart = CartItem.objects.filter(user=request.user, product_variant=product).exists()
                 product_data = product_data = get_product_data(request,is_more_products=False,product=product)
                 product_data['is_in_wishlist'] = is_in_wishlist
@@ -962,7 +963,7 @@ def product_details(request,id):
                 'error': f'There no {base_product.name} Product with size {size} and color {color}'
             }, status=status.HTTP_404_NOT_FOUND)
     product = ProductVariant.objects.get(pk = id)
-    is_in_wishlist = Wishlist.objects.filter(user=request.user, product_variant=product).exists()
+    is_in_wishlist = Wishlist.objects.filter(user=request.user, product_variant=product).exists() if not request.user.is_anonymous else False
     # is_in_cart = CartItem.objects.filter(user=request.user, product_variant=product).exists()
     product_data = get_product_data(request,is_more_products=False,product=product)
     product_data['is_in_wishlist'] = is_in_wishlist
@@ -1038,7 +1039,7 @@ def get_all_categories(request):
         categories = Category.objects.filter(name__icontains=search)
     else:
         categories = Category.objects.all()
-    data = paginate_queryset(categories,3,request)
+    data = paginate_queryset(categories,5,request)
     categories_data = [
         {
             "id": category.id,  # serial number (starts from 1)
@@ -2705,7 +2706,7 @@ class ListReviewView(generics.ListAPIView):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_product_colors(request):
     variant_id = request.GET.get('variant_id')
     size = request.GET.get('size')
@@ -2725,7 +2726,7 @@ def check_auth(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated,IsAdminUser])
 def check_admin_auth(request):
     return Response({"message": "Authenticated"}, status=200)
 

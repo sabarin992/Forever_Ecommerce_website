@@ -96,9 +96,9 @@ const App = () => {
           <Route
             path="collection"
             element={
-              <PrivateRoute>
+              // <PrivateRoute>
                 <Collection />
-              </PrivateRoute>
+              // </PrivateRoute>
             }
           />
           <Route path="contact" element={<Contact />} />
@@ -122,9 +122,9 @@ const App = () => {
           <Route
             path="product/:productId"
             element={
-              <PrivateRoute>
+              // <PrivateRoute>
                 <Product />
-              </PrivateRoute>
+              // </PrivateRoute>
             }
           />
           <Route

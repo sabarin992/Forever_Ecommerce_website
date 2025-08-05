@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState, useRef, useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
@@ -33,6 +33,7 @@ const Product = () => {
   const sizeOrder = ["S", "M", "L", "XL", "XXL"];
   const [averageRating, setAverageRating] = useState(null);
   const [totalReviews, settotalReviews] = useState(null);
+  const navigate = useNavigate();
 
   // Ref for the image container
   const imageContainerRef = useRef(null);
@@ -114,9 +115,14 @@ const Product = () => {
         const match = error?.response?.data?.error.match(/'([^']+)'/);
         const cleanMessage = match ? match[1] : error?.response?.data?.error;
 
-        console.log(cleanMessage);
-        toast.error(cleanMessage);
-        // console.log(error?.response?.data?.error);
+        // if user is not login then redirect to login page
+        if (error?.response?.data?.error === "Refresh token not provided") {
+          navigate('/login');
+        }
+
+        else{
+          toast.error(cleanMessage);
+        }
       }
     }
   };
@@ -140,7 +146,14 @@ const Product = () => {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.error);
+
+      if (error?.response?.data?.error){
+          navigate("/login")
+      }
+      else{
+        toast.error(error?.response?.data?.error);
+      }
+      
       console.log(error?.response?.data?.error);
     }
   };

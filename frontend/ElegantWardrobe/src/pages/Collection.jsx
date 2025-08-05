@@ -20,15 +20,13 @@ const Collection = () => {
   const [hasNext, setHasNext] = useState(false);
   const [hasPrevious, setHasPrevious] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
 
-
-  const submitHandler = (e)=>{
-        e.preventDefault();
-        console.log(minPrice,maxPrice);
-        
-    }
+  const submitHandler = (e) => {
+    e.preventDefault();
+    console.log(minPrice, maxPrice);
+  };
   // toggle category
   const toggleCategory = (e) => {
     if (selectedCategories.includes(e.target.value)) {
@@ -44,21 +42,22 @@ const Collection = () => {
   const applyFilter = async () => {
     const productCopy = products.slice();
 
-      const res = await api.get("/filter_product/", {
-        params: {
-          search: search?search:'',
-          category: selectedCategories.join(",")?selectedCategories.join(","):'',
-          page: activePage?activePage:'',
-          minPrice: minPrice?minPrice:'',
-          maxPrice: maxPrice?maxPrice:''
-        },
-      });
+    const res = await api.get("/filter_product/", {
+      params: {
+        search: search ? search : "",
+        category: selectedCategories.join(",")
+          ? selectedCategories.join(",")
+          : "",
+        page: activePage ? activePage : "",
+        minPrice: minPrice ? minPrice : "",
+        maxPrice: maxPrice ? maxPrice : "",
+      },
+    });
 
-      setProducts(res.data.results);
-      setHasNext(res.data.has_next);
-      setHasPrevious(res.data.has_previous);
-      setTotalPages(res.data.total_pages);
-
+    setProducts(res.data.results);
+    setHasNext(res.data.has_next);
+    setHasPrevious(res.data.has_previous);
+    setTotalPages(res.data.total_pages);
 
     setFilterProducts(productCopy);
   };
@@ -136,7 +135,7 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [selectedCategories, search, showSearch, activePage,minPrice,maxPrice]);
+  }, [selectedCategories, search, showSearch, activePage, minPrice, maxPrice]);
 
   useEffect(() => {
     sortProduct();
@@ -170,7 +169,6 @@ const Collection = () => {
           submitHandler={submitHandler}
         />
       </div>
-
 
       {/* Right Side */}
       <div className="flex-1">
@@ -208,13 +206,15 @@ const Collection = () => {
         </div>
 
         {/* pagination */}
-        <Pagination
-          activePage={activePage}
-          setActivePage={setActivePage}
-          hasNext={hasNext}
-          hasPrevious={hasPrevious}
-          totalPages={totalPages}
-        />
+        {totalPages > 1 ? (
+          <Pagination
+            activePage={activePage}
+            setActivePage={setActivePage}
+            hasNext={hasNext}
+            hasPrevious={hasPrevious}
+            totalPages={totalPages}
+          />
+        ) : null}
       </div>
     </div>
   );
