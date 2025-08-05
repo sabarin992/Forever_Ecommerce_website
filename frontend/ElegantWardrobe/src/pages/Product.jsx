@@ -300,7 +300,8 @@ const Product = () => {
                 <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
                   {productData.name}
                 </h1>
-                <div className="flex items-center gap-4">
+               {
+                totalReviews !==  0? <div className="flex items-center gap-4">
                   {/* Star Rating Display */}
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
@@ -330,7 +331,8 @@ const Product = () => {
                       ⭐ Bestseller
                     </span>
                   ) : null}
-                </div>
+                </div>: <p className="text-gray-400 border border-gray-400 inline-block p-2 rounded">No ratings yet</p>
+               }
               </div>
               {/* Price */}
               <div className="flex items-baseline gap-4">

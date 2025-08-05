@@ -8,11 +8,11 @@ import ConfirmModal from "@/ConfirmModal";
 
 const Navbar = () => {
   const [visisble, setVisible] = useState(false);
-  const { setShowSearch, cartCount, wishListCount } = useContext(ShopContext);
+  const { setShowSearch, cartCount,wishListCount,isAuthenticated, setIsAuthenticated } = useContext(ShopContext);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const { isAuthenticated, setIsAuthenticated } = useContext(ShopContext);
+
 
   const handleLogout = async () => {
     try {
