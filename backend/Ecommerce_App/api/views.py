@@ -1031,7 +1031,7 @@ def edit_user(request,id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_all_categories(request):
     print(request.user)
     search = request.GET.get("search")
@@ -1057,7 +1057,7 @@ def get_all_categories(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_all_listed_categories(request):
     categories = Category.objects.filter(is_active = True)
     categories_list = [category.name.capitalize() for category in categories]

@@ -1,26 +1,24 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { GoogleLogin } from '@react-oauth/google'; 
 
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { USER_ACCESS_TOKEN, USER_REFRESH_TOKEN } from '../constants';
 import { toast } from 'react-toastify';
+import { ShopContext } from '@/context/ShopContext';
 
 const GoogleAuth = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const {setIsAuthenticated } = useContext(ShopContext);
   const handleSuccess = async (response) => {
     const token = response.credential; // Google token
-    console.log(token)
 
     try {
       // Send token to Django backend
       const res = await api.post('/google-login/', {
         token,
       });
-
-      // Store tokens (e.g. in localStorage or Redux)
-      localStorage.setItem(USER_ACCESS_TOKEN, res.data.access);
-      localStorage.setItem(USER_REFRESH_TOKEN, res.data.refresh);
+      setIsAuthenticated(true)
       toast.success("Login Successful");
       navigate('/');
     } catch (error) {

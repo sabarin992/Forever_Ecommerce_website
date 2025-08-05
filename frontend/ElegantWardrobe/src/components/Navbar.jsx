@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
@@ -12,16 +12,32 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const { isAuthenticated, setIsAuthenticated } = useContext(ShopContext);
 
   const handleLogout = async () => {
     try {
       const res = await api.post("/logout/");
-      setIsModalOpen(false)
+      setIsAuthenticated(false);
+      setIsModalOpen(false);
       navigate("/login");
     } catch (error) {
       console.log("error in logout");
     }
   };
+
+  useEffect(() => {
+    const getResponse = async () => {
+      try {
+        const res = await api.get("/check-auth/");
+        if (res.status === 200) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getResponse();
+  }, []);
 
   return (
     <div className="flex items-center justify-between py-5 font-medium">
@@ -56,66 +72,75 @@ const Navbar = () => {
           alt=""
         />
 
-        <div className="group relative">
-          <Link>
-            <img
-              className="w-5 cursor-pointer"
-              src={assets.profile_icon}
-              alt=""
-            />
-          </Link>
-          <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
-            <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
-              <Link to="/profile" className="cursor-pointer hover:text-black">
-                <p>My Profile</p>
-              </Link>
-              <p
-                onClick={() => {
-                  navigate("/orders");
-                }}
-                className="cursor-pointer hover:text-black"
-              >
-                Orders
-              </p>
-              <p
-                onClick={()=>{
-                  setIsModalOpen(true)
-                  setModalMessage('Are you sure to want to Logout')
-                }}
-                className="cursor-pointer hover:text-black"
-              >
-                Logout
-              </p>
-            </div>
-          </div>
-        </div>
+        {/* Logout */}
 
-        <Link to="/wishlist" className="relative">
-          <svg
-            // onClick={onClick}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="black"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ cursor: "pointer" }}
-          >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-          <p className="absolute bottom-[-5px] right-[-5px] w-4 text-center leading-4 bg-block text-white aspect-square rounded-full text-[8px] bg-black">
-            {wishListCount}
-          </p>
-        </Link>
-        <Link to="/cart" className="relative">
-          <img src={assets.cart_icon} className="w-5 min-w-5" alt="" />
-          <p className="absolute bottom-[-5px] right-[-5px] w-4 text-center leading-4 bg-block text-white aspect-square rounded-full text-[8px] bg-black">
-            {cartCount}
-          </p>
-        </Link>
+        {isAuthenticated ? (
+          <>
+            <div className="group relative">
+              <Link>
+                <img
+                  className="w-5 cursor-pointer"
+                  src={assets.profile_icon}
+                  alt=""
+                />
+              </Link>
+              <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
+                <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
+                  <Link
+                    to="/profile"
+                    className="cursor-pointer hover:text-black"
+                  >
+                    <p>My Profile</p>
+                  </Link>
+                  <p
+                    onClick={() => {
+                      navigate("/orders");
+                    }}
+                    className="cursor-pointer hover:text-black"
+                  >
+                    Orders
+                  </p>
+                  <p
+                    onClick={() => {
+                      setIsModalOpen(true);
+                      setModalMessage("Are you sure to want to Logout");
+                    }}
+                    className="cursor-pointer hover:text-black"
+                  >
+                    Logout
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Link to="/wishlist" className="relative">
+              <svg
+                // onClick={onClick}
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="black"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ cursor: "pointer" }}
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <p className="absolute bottom-[-5px] right-[-5px] w-4 text-center leading-4 bg-block text-white aspect-square rounded-full text-[8px] bg-black">
+                {wishListCount}
+              </p>
+            </Link>
+            <Link to="/cart" className="relative">
+              <img src={assets.cart_icon} className="w-5 min-w-5" alt="" />
+              <p className="absolute bottom-[-5px] right-[-5px] w-4 text-center leading-4 bg-block text-white aspect-square rounded-full text-[8px] bg-black">
+                {cartCount}
+              </p>
+            </Link>
+          </>
+        ) : null}
 
         <img
           onClick={() => {

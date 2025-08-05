@@ -1,5 +1,6 @@
 import api from '@/api'
-import React, { useEffect } from 'react'
+import { ShopContext } from '@/context/ShopContext'
+import React, { useContext, useEffect } from 'react'
 
 const Logout = () => {
     useEffect(()=>{

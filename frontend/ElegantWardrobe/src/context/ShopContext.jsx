@@ -36,6 +36,7 @@ const ShopContextProvider = (props) => {
   const [hasPrevious, setHasPrevious] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [cartError, setCartError] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Fetch products when ShopContextProvider mounts
   useEffect(() => {
@@ -106,7 +107,7 @@ const ShopContextProvider = (props) => {
         });
         // console.log(res.data.cart_data);
         console.log(res.data.cart_data.results);
-        
+
         setCartData(res.data.cart_data.results);
         setHasNext(res.data.cart_data.has_next);
         setHasPrevious(res.data.cart_data.has_previous);
@@ -130,9 +131,7 @@ const ShopContextProvider = (props) => {
         const res = await api.get("/get_all_wishlist_products/");
         setWishListItems(res.data.wishlist_data);
         setWishListCount(res.data.wishlist_count);
-      } catch (error) {
-     
-      }
+      } catch (error) {}
     };
     getWishListItems();
   }, [isAddToCart, isChangeWishList]);
@@ -142,9 +141,7 @@ const ShopContextProvider = (props) => {
       const res = await api.delete(`/remove_cartitem/${id}/`);
       setIsRomoveCartItem(!isRomoveCartItem);
       toast.success(res.data);
-    } catch (error) {
-     
-    }
+    } catch (error) {}
   };
 
   const value = {
@@ -181,6 +178,8 @@ const ShopContextProvider = (props) => {
     setIsChangeWishList,
     wishListCount,
     cartError,
+    isAuthenticated,
+    setIsAuthenticated,
   };
 
   return (

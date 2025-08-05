@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import GoogleAuth from "../components/GoogleAuth";
 import { Eye, EyeOff } from "lucide-react";
+import { useContext } from "react";
+import { ShopContext } from "@/context/ShopContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +17,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const {isAuthenticated, setIsAuthenticated} = useContext(ShopContext)
 
   // Validation functions
   const validateEmail = (value) => {
@@ -110,6 +113,7 @@ const Login = () => {
       const res = await api.post("/login/", { email, password },{withCredentials: true});
       console.log(res.data)
       toast.success("Login Successful");
+      setIsAuthenticated(true)
       navigate("/");
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {

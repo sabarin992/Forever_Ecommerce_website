@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "@/api";
 import { toast } from "react-toastify";
 import ConfirmModal from "@/ConfirmModal";
@@ -20,6 +20,7 @@ const ProductItem = ({
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const navigate = useNavigate()
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -75,7 +76,12 @@ const ProductItem = ({
       }
     } catch (error) {
       setIsInWishList(false);
-      toast.error(error?.response?.data?.error);
+      if (error?.response?.data?.error === 'Refresh token not provided'){
+        navigate("/login")
+      }
+      else{
+        toast.error(error?.response?.data?.error);
+      }
     }
   };
 
