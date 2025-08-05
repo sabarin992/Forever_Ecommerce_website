@@ -5,8 +5,11 @@ const Pagination = (props) => {
     const {activePage, setActivePage, hasNext, hasPrevious, totalPages} = props;
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1);   
     
+    
+    
     return (
-        <div className="flex justify-center items-center mt-10">
+    
+         <div className="flex justify-center items-center mt-10">
             <nav className="flex items-center space-x-1 bg-white rounded-lg shadow-sm border border-gray-200 p-1">
                 {/* Previous Button */}
                 <button 

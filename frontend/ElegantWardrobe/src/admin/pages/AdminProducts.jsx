@@ -158,13 +158,16 @@ export default function AdminProducts() {
           </table>
         </div>
       </div>
-      <Pagination
-        activePage={activePage}
-        setActivePage={setActivePage}
-        hasNext={hasNext}
-        hasPrevious={hasPrevious}
-        totalPages={totalPages}
-      />
+
+      {totalPages > 1 ? (
+          <Pagination
+            activePage={activePage}
+            setActivePage={setActivePage}
+            hasNext={hasNext}
+            hasPrevious={hasPrevious}
+            totalPages={totalPages}
+          />
+        ) : null}
       <ConfirmModal
         isOpen={isModalOpen}
         onClose={()=>setIsModalOpen(false)}
