@@ -41,6 +41,9 @@ const Cart = () => {
   //     }
   // }
 
+  console.log(cartData)
+
+
   const handleConfirmDeleteCartItem = () =>{
     removeCartItem(productId)
     setIsModalOpen(false)
@@ -100,6 +103,7 @@ const Cart = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Discount
@@ -154,9 +158,9 @@ const Cart = () => {
             </div>
 
             {/* Desktop Layout */}
-            <div className="hidden lg:grid lg:grid-cols-12 lg:gap-6 lg:items-center">
+            <div className="hidden lg:grid lg:grid-cols-12 lg:gap-4 lg:items-center">
               {/* Product Info - 4 columns */}
-              <div className="col-span-4">
+              <div className="col-span-3">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0">
                     <img
@@ -182,6 +186,15 @@ const Cart = () => {
               </div>
 
               {/* Discount - 2 columns */}
+
+              <div className="col-span-1 text-center">
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Discount%
+                </label>
+                <p className="text-base font-semibol">
+                  {currency} {productData.discount_percentage}%
+                </p>
+              </div>
               <div className="col-span-2 text-center">
                 <label className="block text-sm font-medium text-gray-600 mb-1">
                   Discount

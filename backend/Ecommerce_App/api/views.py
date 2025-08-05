@@ -1317,6 +1317,7 @@ def get_all_cart_products(request):
         "image":request.build_absolute_uri(item.get_variant_image()),
          "name":item.product_variant.product.name,
          "actual_price":item.get_actual_price(),
+         "discount_percentage":item.product_variant.product_discount,
          "price":item.total_price,
          "size":item.size,
          "quantity":item.quantity,
