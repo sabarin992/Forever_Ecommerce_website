@@ -1003,19 +1003,36 @@ def get_all_users(request):
 
 # for block and unblock user
 @api_view(['GET'])
-@permission_classes([IsAuthenticated,IsAdminUser])
-def block_unblock_user(request,id):
-    user = CustomUser.objects.get(pk = id)
-    user.is_active = False if user.is_active else True
+@permission_classes([IsAuthenticated, IsAdminUser])
+def block_unblock_user(request, id):
+    try:
+        user = CustomUser.objects.get(pk=id)
+    except CustomUser.DoesNotExist:
+        return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    user.is_active = not user.is_active
     user.save()
-    users = CustomUser.objects.filter(is_staff = False).order_by('-created_at')
-    data = paginate_queryset(users,5,request)
-    users_data = get_users_data(request,users=data['products'])
+
+    # Read current page number from query params
+    current_page = request.query_params.get('page')
+
+    # Re-assign page number so paginator paginates correctly
+    if current_page:
+        request._request.GET._mutable = True
+        request._request.GET['page'] = current_page
+        request._request.GET._mutable = False
+
+    users = CustomUser.objects.filter(is_staff=False).order_by('-created_at')
+    data = paginate_queryset(users, 5, request)
+    users_data = get_users_data(request, users=data['products'])
+
     response = data['paginator'].get_paginated_response(users_data)
     response.data['has_next'] = bool(data['paginator'].get_next_link())
     response.data['has_previous'] = bool(data['paginator'].get_previous_link())
     response.data['total_pages'] = data['total_pages']
-    return Response(response.data,status=status.HTTP_200_OK)
+    response.data['current_page'] = current_page
+    return Response(response.data, status=status.HTTP_200_OK)
+
 
 # for edit user
 @api_view(['POST'])
@@ -2489,9 +2506,19 @@ def coupon_list(request):
     List all coupons or create a new coupon
     """
     if request.method == 'GET':
-        coupons = Coupon.objects.all()
-        serializer = CouponSerializer(coupons, many=True)
-        return Response(serializer.data)
+        coupons = Coupon.objects.all()  # Optional: for latest coupons first
+
+        # Paginate the coupons
+        data = paginate_queryset(coupons, 5, request)  # 5 = page size (change as needed)
+        serializer = CouponSerializer(data['products'], many=True)
+
+        # Prepare response with pagination metadata
+        response = data['paginator'].get_paginated_response(serializer.data)
+        response.data['has_next'] = data['has_next']
+        response.data['has_previous'] = data['has_previous']
+        response.data['total_pages'] = data['total_pages']
+        response.data['total_items'] = data['total_items']
+        return response
 
     elif request.method == 'POST':
         serializer = CouponSerializer(data=request.data)

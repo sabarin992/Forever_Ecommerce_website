@@ -22,6 +22,8 @@ export default function AdminUsers() {
   const [modalMessage, setModalMessage] = useState("");
   const [userId, setUserId] = useState(null);
 
+
+
   useEffect(() => {
     const getUsers = async () => {
       try {
@@ -43,7 +45,7 @@ export default function AdminUsers() {
 
   const toggleBlockStatus = async (id) => {
     try {
-      const res = await adminApi.get(`/block_unblock_user/${id}/`);
+      const res = await adminApi.get(`/block_unblock_user/${id}/`,{params:{page:activePage}});
       setUsers(res.data.results);
       setHasNext(res.data.has_next);
       setHasPrevious(res.data.has_previous);
