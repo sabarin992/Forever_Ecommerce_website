@@ -12,6 +12,7 @@ import RazorpayCheckout from "@/components/RazorPayCheckout";
 import Coupon from "@/components/Coupon";
 import ShowALLValidCoupons from "@/components/ShowALLValidCoupons";
 import { toast } from "react-toastify";
+import ConfirmModal from "@/ConfirmModal";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("COD");
@@ -19,7 +20,15 @@ const PlaceOrder = () => {
   const [customer, setCustomer] = useState({});
   const [shipAddress, setShipAddress] = useState("");
   const [addresses, setAddresses] = useState([]);
-  const { totalPrice, totalDiscount, delivery_fee,isRomoveCartItem, setIsRomoveCartItem } = useContext(ShopContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const {
+    totalPrice,
+    totalDiscount,
+    delivery_fee,
+    isRomoveCartItem,
+    setIsRomoveCartItem,
+  } = useContext(ShopContext);
   const [discount, setDiscount] = useState(null);
   const navigate = useNavigate();
   const [showCoupons, setShowCoupons] = useState(false);
@@ -200,7 +209,8 @@ const PlaceOrder = () => {
         "Order Placed",
         "Your order has been successfully placed!"
       );
-      setIsRomoveCartItem(!isRomoveCartItem)
+      setIsModalOpen(false)
+      setIsRomoveCartItem(!isRomoveCartItem);
       navigate("/order-success", {
         state: { orderId: res.data.order_id, discount: discount },
       });
@@ -288,7 +298,8 @@ const PlaceOrder = () => {
               "Order Placed",
               "Your order has been successfully placed!"
             );
-            setIsRomoveCartItem(!isRomoveCartItem)
+            setIsModalOpen(false)
+            setIsRomoveCartItem(!isRomoveCartItem);
             navigate("/order-success", {
               state: { orderId: res.data.order_id },
             });
@@ -532,11 +543,15 @@ const PlaceOrder = () => {
           <div className="w-full text-end mt-8">
             <button
               onClick={
-                method === "COD" || method === "WALLET"
-                  ? handlePlaceOrder
-                  : method === "RAZORPAY"
-                  ? handlePayment
-                  : () => {}
+                // method === "COD" || method === "WALLET"
+                //   ? handlePlaceOrder
+                //   : method === "RAZORPAY"
+                //   ? handlePayment
+                //   : () => {}
+                () => {
+                  setIsModalOpen(true);
+                  console.log("place order");
+                }
               }
               className="bg-black text-white text-sm my-8 px-16 py-3"
             >
@@ -720,6 +735,19 @@ const PlaceOrder = () => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={
+          method === "COD" || method === "WALLET"
+            ? handlePlaceOrder
+            : method === "RAZORPAY"
+            ? handlePayment
+            : () => {}
+        }
+        message="Are you sure you want Place this order?"
+      />
     </div>
   );
 };
