@@ -19,7 +19,7 @@ const OrderDetails = () => {
   const [orderItemId, setOrderItemId] = useState(0);
   const [isRetryingPayment, setIsRetryingPayment] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [selectedOrderId,setselectedOrderId] = useState(null)
+  const [selectedOrderId, setselectedOrderId] = useState(null);
 
   useEffect(() => {
     const getOrderDetails = async () => {
@@ -176,7 +176,7 @@ const OrderDetails = () => {
       const res = await api.put(`/cancel_order_item/${selectedOrderId}/`);
       toast.success(res.data.message);
       setIsChangeOrderItem(!isChangeOrderItem);
-      setIsCancelModalOpen(false)
+      setIsCancelModalOpen(false);
     } catch (error) {
       toast.error(error?.response?.data?.error);
     }
@@ -301,8 +301,8 @@ const OrderDetails = () => {
                   ) : item.status === "PENDING" ? (
                     <button
                       onClick={() => {
-                        setIsCancelModalOpen(true)
-                        setselectedOrderId(item.item_id)
+                        setIsCancelModalOpen(true);
+                        setselectedOrderId(item.item_id);
                       }}
                       className="mt-2 px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
                     >
@@ -316,16 +316,18 @@ const OrderDetails = () => {
                     <p className="text-gray-600">{item.status}</p>
                   </div>
                   <div>
-                    <button
-                      className="text-blue-600"
-                      onClick={() => {
-                        navigate("/add-review-ratings", {
-                          state: { productId: item.product_variant_id },
-                        });
-                      }}
-                    >
-                      Rate & Review Product
-                    </button>
+                    {item.status.toLowerCase() === 'delivered' ? (
+                      <button
+                        className="text-blue-600"
+                        onClick={() => {
+                          navigate("/add-review-ratings", {
+                            state: { productId: item.product_variant_id },
+                          });
+                        }}
+                      >
+                        Rate & Review Product
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               </div>
