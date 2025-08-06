@@ -58,13 +58,6 @@ const AdminSidebar = () => {
             <span className='font-medium text-sm md:text-base hidden md:block'>Coupons</span>
           </NavLink>
 
-          <NavLink to={'list'} className={navLinkClass}>
-            <div className='flex items-center justify-center w-8 h-8 rounded-md bg-indigo-100 group-hover:bg-indigo-200 transition-colors duration-300'>
-              <img className='w-5 h-5' src={admin_assets.order_icon} alt="List Items" />
-            </div>
-            <span className='font-medium text-sm md:text-base hidden md:block'>List Items</span>
-          </NavLink>
-
           <NavLink to={'orders'} className={navLinkClass}>
             <div className='flex items-center justify-center w-8 h-8 rounded-md bg-yellow-100 group-hover:bg-yellow-200 transition-colors duration-300'>
               <img className='w-5 h-5' src={admin_assets.order_icon} alt="Orders" />
