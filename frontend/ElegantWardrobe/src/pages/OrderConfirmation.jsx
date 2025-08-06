@@ -12,7 +12,22 @@ export default function OrderConfirmation() {
   const { orderId,discount } = location.state;
   const navigate = useNavigate()
 
-  console.log(discount)
+  // Prevent back navigation
+  useEffect(() => {
+    const handleBackButton = (event) => {
+      event.preventDefault();
+      // Redirect to a safe page, e.g., /orders or /collection
+      navigate("/collection", { replace: true });
+    };
+
+    window.history.pushState(null, null, window.location.href);
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, [navigate]);
+
 
   useEffect(() => {
     const getOrderDetails = async () => {
