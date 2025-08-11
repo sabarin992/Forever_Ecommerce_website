@@ -50,6 +50,9 @@ const Cart = () => {
   }
 
   return (
+
+    <>
+    {cartData.length >0?
     <div className="border-t pt-14">
       <div className="text-2xl mb-3">
         <Title text1={"YOUR"} text2={"CART"} />
@@ -300,8 +303,11 @@ const Cart = () => {
         onConfirm={handleConfirmDeleteCartItem}
         message="Are you sure you want to delete this item from cart?"
       />
-    </div>
-  );
+    </div>:
+    <h1 className="text-gray-400 border border-gray-400 inline-block p-2 rounded">No items in the cart</h1>
+}
+    </>
+      );
 };
 
 export default Cart;
