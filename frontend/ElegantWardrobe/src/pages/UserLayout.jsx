@@ -10,7 +10,9 @@ const UserLayout = () => {
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
     <Navbar/>
     <SearchBar/>
-    <Outlet/>
+    <div className='min-h-56'>
+      <Outlet/>
+    </div>
     <Footer/>
     </div>
   )
