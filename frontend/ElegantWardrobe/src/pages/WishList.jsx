@@ -22,6 +22,8 @@ const WishList = () => {
 
   // // The below 3 function is for wishlist delete confirmation modal
 
+  console.log(wishlistItems);
+
   const handleDeleteClick = (wishListId) => {
     setSelectedWishListId(wishListId);
     setIsModalOpen(true);
@@ -74,11 +76,11 @@ const WishList = () => {
       toast.success(res.data);
       setIsAddToCart(!isAddToCart);
     } catch (error) {
-      if(error?.response?.data){
-        toast.error(error?.response?.data)
-        return
+      if (error?.response?.data) {
+        toast.error(error?.response?.data);
+        return;
       }
-      
+
       const match = error?.response?.data?.error?.match(/'([^']+)'/);
       const cleanMessage = match ? match[1] : error?.response?.data?.error;
       toast.error(cleanMessage || "Add to cart failed");
@@ -90,21 +92,25 @@ const WishList = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="text-2xl mb-3">
-        <Title text1={"YOUR"} text2={"WISHLIST"} />
-      </div>
-      <WishlistTable
-        items={wishlistItems}
-        currency={currency}
-        handleDeleteClick={handleDeleteClick}
-        handleConfirmDelete={handleConfirmDelete}
-        handleCancel={handleCancel}
-        isModalOpen={isModalOpen}
-        isAddToCartModalOpen = {isAddToCartModalOpen}
-        handleAddToCartClick={handleAddToCartClick}
-        handleConfirmAddToCart = {handleConfirmAddToCart}
-        setIsAddToCartModalOpen = {setIsAddToCartModalOpen}
-      />
+      {wishlistItems.length > 0 ? (
+        <>
+          <div className="text-2xl mb-3">
+            <Title text1={"YOUR"} text2={"WISHLIST"} />
+          </div>
+          <WishlistTable
+            items={wishlistItems}
+            currency={currency}
+            handleDeleteClick={handleDeleteClick}
+            handleConfirmDelete={handleConfirmDelete}
+            handleCancel={handleCancel}
+            isModalOpen={isModalOpen}
+            isAddToCartModalOpen={isAddToCartModalOpen}
+            handleAddToCartClick={handleAddToCartClick}
+            handleConfirmAddToCart={handleConfirmAddToCart}
+            setIsAddToCartModalOpen={setIsAddToCartModalOpen}
+          />
+        </>
+      ) : <h1 className="text-gray-400 border border-gray-400 inline-block p-2 rounded">No items in the WishList</h1>}
     </div>
   );
 };
