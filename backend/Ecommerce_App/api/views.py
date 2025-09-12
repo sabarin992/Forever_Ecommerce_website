@@ -670,38 +670,22 @@ def edit_product(request,id):
 def generate_otp():
     return str(random.randint(100000, 999999))
 
+
+
 def send_otp_email(email, otp):
     subject = 'Your OTP Code'
     message = f'Your OTP is {otp}'
-    from_email = 'your_email@gmail.com'  # Replace with your Gmail address
+    from_email = config('EMAIL_HOST_USER')  # Use your email from env
     recipient_list = [email]
 
-    # Use certifi's CA bundle for SSL context
-    context = ssl.create_default_context(cafile=certifi.where())
-
-    host=config('EMAIL_HOST')
-    print(f'host = {host}')
-    port=config('EMAIL_PORT', cast=int)
-    username=config('EMAIL_HOST_USER')
-    password=config('EMAIL_HOST_PASSWORD')
-    use_tls=config('EMAIL_USE_TLS', cast=bool)
-    ssl_context=context
-
-    # Create a custom EmailBackend with the SSL context
+    # Create EmailBackend with SSL context
     connection = EmailBackend(
-        # host='smtp.gmail.com',           # Replace with your SMTP host if different
-        # port=587,                        # Common port for TLS
-        # username='sabarin992@gmail.com', # Replace with your Gmail address
-        # password='rfly esiy kxku yhon',    # Replace with your app-specific password
-        # use_tls=True,                    # Enable TLS
-        # ssl_context=context              # Use the certifi SSL context
-
         host=config('EMAIL_HOST'),
         port=config('EMAIL_PORT', cast=int),
         username=config('EMAIL_HOST_USER'),
         password=config('EMAIL_HOST_PASSWORD'),
         use_tls=config('EMAIL_USE_TLS', cast=bool),
-        ssl_context=context
+
     )
 
     try:
@@ -711,10 +695,58 @@ def send_otp_email(email, otp):
             from_email,
             recipient_list,
             fail_silently=False,
-            connection=connection,       # Pass the custom connection
+            connection=connection
         )
+        print(f'OTP successfully sent to {email}')
     except Exception as e:
-        pass
+        print(f'Error sending OTP: {e}')
+
+
+# def send_otp_email(email, otp):
+#     subject = 'Your OTP Code'
+#     message = f'Your OTP is {otp}'
+#     from_email = 'your_email@gmail.com'  # Replace with your Gmail address
+#     recipient_list = [email]
+
+#     # Use certifi's CA bundle for SSL context
+#     context = ssl.create_default_context(cafile=certifi.where())
+
+#     host=config('EMAIL_HOST')
+#     print(f'host = {host}')
+#     port=config('EMAIL_PORT', cast=int)
+#     username=config('EMAIL_HOST_USER')
+#     password=config('EMAIL_HOST_PASSWORD')
+#     use_tls=config('EMAIL_USE_TLS', cast=bool)
+#     ssl_context=context
+
+#     # Create a custom EmailBackend with the SSL context
+#     connection = EmailBackend(
+#         # host='smtp.gmail.com',           # Replace with your SMTP host if different
+#         # port=587,                        # Common port for TLS
+#         # username='sabarin992@gmail.com', # Replace with your Gmail address
+#         # password='rfly esiy kxku yhon',    # Replace with your app-specific password
+#         # use_tls=True,                    # Enable TLS
+#         # ssl_context=context              # Use the certifi SSL context
+
+#         host=config('EMAIL_HOST'),
+#         port=config('EMAIL_PORT', cast=int),
+#         username=config('EMAIL_HOST_USER'),
+#         password=config('EMAIL_HOST_PASSWORD'),
+#         use_tls=config('EMAIL_USE_TLS', cast=bool),
+#         ssl_context=context
+#     )
+
+#     try:
+#         send_mail(
+#             subject,
+#             message,
+#             from_email,
+#             recipient_list,
+#             fail_silently=False,
+#             connection=connection,       # Pass the custom connection
+#         )
+#     except Exception as e:
+#         print(e)
 
 
 
