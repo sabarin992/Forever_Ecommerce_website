@@ -18,7 +18,7 @@ const SearchComponent = () => {
           placeholder="Seach"
         />
         {!search?<img className="w-4" src={assets.search_icon} alt="" />
-        :<img className="w-4" onClick={()=>{setSearch('')}} src={assets.cross_icon} alt="" />}
+        :<img className="w-4 cursor-pointer" onClick={()=>{setSearch('')}} src={assets.cross_icon} alt="" />}
       </div>
     </div>
   );
