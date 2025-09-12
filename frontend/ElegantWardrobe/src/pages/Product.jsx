@@ -109,11 +109,12 @@ const Product = () => {
       toast.success(res.data);
       setIsAddToCart(!isAddToCart);
     } catch (error) {
-      // toast.error(error?.response?.data);
+      toast.error(error?.response?.data);
       console.log(error);
       if (error?.response?.data?.error) {
         const match = error?.response?.data?.error.match(/'([^']+)'/);
         const cleanMessage = match ? match[1] : error?.response?.data?.error;
+        
 
         // if user is not login then redirect to login page
         if (error?.response?.data?.error === "Refresh token not provided") {
