@@ -1085,9 +1085,9 @@ def get_all_categories(request):
     print(request.user)
     search = request.GET.get("search")
     if search:
-        categories = Category.objects.filter(name__icontains=search)
+        categories = Category.objects.filter(name__icontains=search).order_by("-created_at")
     else:
-        categories = Category.objects.all()
+        categories = Category.objects.all().order_by("-created_at")
     data = paginate_queryset(categories,5,request)
     categories_data = [
         {
