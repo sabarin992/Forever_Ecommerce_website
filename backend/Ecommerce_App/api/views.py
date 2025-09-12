@@ -846,7 +846,7 @@ def get_products(request):
 def get_all_products(request):
     search = request.GET.get("search")
 
-    first_variant = ProductVariant.objects.filter(product=OuterRef('pk')).order_by('id')
+    first_variant = ProductVariant.objects.filter(product=OuterRef('pk'))
 
     productss = (
         Product.objects
@@ -857,12 +857,12 @@ def get_all_products(request):
     if search:
 
         # products = ProductVariant.objects.filter(product__name__icontains=search)
-        variants = ProductVariant.objects.filter(pk__in=variant_ids,product__name__icontains=search)
+        variants = ProductVariant.objects.filter(pk__in=variant_ids,product__name__icontains=search).order_by('-created_at')
     else:
         # products = ProductVariant.objects.all() 
 
         # Subquery to pick the first variant of a product
-        variants = ProductVariant.objects.filter(pk__in=variant_ids)
+        variants = ProductVariant.objects.filter(pk__in=variant_ids).order_by('-created_at')
 
     data = paginate_queryset(variants,5,request)
     products_data = [
