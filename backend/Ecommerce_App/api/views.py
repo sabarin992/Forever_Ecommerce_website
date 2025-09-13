@@ -1212,7 +1212,7 @@ def reset_password(request):
     old_password = request.data["old_password"]
     new_password = request.data["new_password"]
     if not check_password(old_password,user.password):
-        return Response('Invalid Password',status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error':'Invalid Old Password'},status=status.HTTP_400_BAD_REQUEST)
     user.set_password(new_password)
     user.save()
     return Response('Password Changed Successfull',status=status.HTTP_200_OK)
