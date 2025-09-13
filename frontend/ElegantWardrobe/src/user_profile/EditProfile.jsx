@@ -164,7 +164,7 @@ const EditProfile = () => {
                 setOtp("");
                 toast.success("OTP sent to your new email address");
             } catch (error) {
-                toast.error("Error sending OTP. Try again!");
+                toast.error(error?.response?.data?.error);
             } finally {
                 setLoading(false);
                 setIsSubmitting(false);
@@ -181,7 +181,7 @@ const EditProfile = () => {
                 }
             } catch (error) {
                 console.log(error.message);
-                toast.error("Profile Update Failed");
+                toast.error(error?.response?.data?.error);
             } finally {
                 setIsSubmitting(false);
             }

@@ -1180,6 +1180,12 @@ def user_profile(request):
 @permission_classes([IsAuthenticated])
 def edit_user_profile(request):
     user = CustomUser.objects.get(pk = request.user.id)
+    is_phone_number_exist = CustomUser.objects.filter(phone_number=request.data["phone_number"]).exists()
+
+    if user.phone_number == request.data["phone_number"]:
+        pass
+    elif is_phone_number_exist:
+        return Response({'error':'Phone Number Already Exist'},status=status.HTTP_400_BAD_REQUEST)
     if request.method == 'GET':
         user_data = {
             "id":user.id,
