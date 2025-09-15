@@ -87,7 +87,7 @@ const CouponList = ({ coupons, onEditCoupon, onDeleteCoupon }) => {
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                  ${parseFloat(coupon?.minimum_order_amount).toFixed(2)}
+                  {currency}{parseFloat(coupon?.minimum_order_amount).toFixed(2)}
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
