@@ -10,11 +10,11 @@ const Coupon = ({ cartTotal, discount,setDiscount,couponCode,setCouponCode}) => 
     
     try {
       const response = await api.post("apply_coupon/", {
-        code: couponCode,
+        code: couponCode.trim(),
         order_total: cartTotal,
       });
       setDiscount(response.data.discount_percent);
-      setAppliedCoupon(couponCode); // Store the applied code
+      setAppliedCoupon(couponCode.trim()); // Store the applied code
     } catch (error) {
       toast.error(error?.response?.data?.error || "Failed to apply coupon.");
     }

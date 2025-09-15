@@ -46,6 +46,7 @@ const WishlistTable = ({
                 alt={item.name}
                 className="w-20 h-24 object-cover bg-gray-100"
               />
+              <span className="text-red-700">{item.stock_quantity<=0?'out of stock':null}</span>
             </div>
             <div className="ml-2">
               <h3 className="text-gray-700">{item.name}</h3>
@@ -96,7 +97,8 @@ const WishlistTable = ({
                     item.quantity || 1
                   )
                 }
-                className="w-full md:w-auto bg-black text-white py-2 px-4 uppercase text-sm tracking-wider hover:bg-gray-700"
+                disabled={!item.stock_quantity>0?true:false}
+                className={`w-full md:w-auto bg-black text-white py-2 px-4 uppercase text-sm tracking-wider hover:bg-gray-700${!item.stock_quantity > 0?'disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:opacity-60 transition-colors duration-200':null}`}
               >
                 ADD TO CART
               </button>
