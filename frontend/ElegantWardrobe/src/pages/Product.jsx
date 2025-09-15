@@ -487,7 +487,8 @@ const Product = () => {
                 {!productData.is_in_cart ? (
                   <button
                     onClick={() => addToCart(productData.id, size)}
-                    className="flex-1 bg-black hover:from-blue-700  text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 group"
+                      className={`flex-1 bg-black hover:from-blue-700  text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center gap-3 group ${!productData.stock_quantity > 0?'disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:opacity-60 transition-colors duration-200':null}`}
+                    disabled={!productData.stock_quantity > 0?true:false}
                   >
                     <svg
                       className="w-6 h-6 group-hover:animate-bounce"
