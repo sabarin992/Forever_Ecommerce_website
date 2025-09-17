@@ -76,9 +76,16 @@ const WishList = () => {
       toast.success(res.data);
       setIsAddToCart(!isAddToCart);
     } catch (error) {
-      if (error?.response?.data) {
+      if (error?.response?.data?.error) {
+        const match = error?.response?.data?.error?.match(/'([^']+)'/);
+        const cleanMessage = match ? match[1] : error?.response?.data?.error;
+        toast.error(cleanMessage || "Add to cart failed");
+        return;
+      } else if (error?.response?.data) {
         toast.error(error?.response?.data);
         return;
+      } else {
+        console.log(error);
       }
 
       const match = error?.response?.data?.error?.match(/'([^']+)'/);
@@ -110,7 +117,11 @@ const WishList = () => {
             setIsAddToCartModalOpen={setIsAddToCartModalOpen}
           />
         </>
-      ) : <h1 className="text-gray-400 border border-gray-400 inline-block p-2 rounded">No items in the WishList</h1>}
+      ) : (
+        <h1 className="text-gray-400 border border-gray-400 inline-block p-2 rounded">
+          No items in the WishList
+        </h1>
+      )}
     </div>
   );
 };
