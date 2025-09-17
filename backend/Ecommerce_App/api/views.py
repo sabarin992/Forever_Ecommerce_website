@@ -199,9 +199,9 @@ def save_image_from_url(image_url):
             upload_result = upload(response.content)  # Upload to Cloudinary
             return upload_result.get("public_id")  # Return Cloudinary identifier
     except CloudinaryError as e:
-        print(f"Cloudinary upload error: {e}")
+        logging.info(f"Cloudinary upload error: {e}")
     except Exception as e:
-        print(f"General error: {e}")
+        logging.info(f"General error: {e}")
     return None
 
 
@@ -306,7 +306,6 @@ def logout(request):
 @permission_classes([AllowAny]) 
 @authentication_classes([])
 def refresh_token(request):
-    print('refresh token')
     refresh_token = request.COOKIES.get('refresh_token')
 
     if not refresh_token:
@@ -513,7 +512,6 @@ def register(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated,IsAdminUser])
 def add_product(request):
-    print(f'User = {request.user}')
     data = request.data
     result = querydict_to_dict(data)
     
@@ -697,56 +695,9 @@ def send_otp_email(email, otp):
             fail_silently=False,
             connection=connection
         )
-        print(f'OTP successfully sent to {email}')
+        logging.info(f'OTP successfully sent to {email}')
     except Exception as e:
-        print(f'Error sending OTP: {e}')
-
-
-# def send_otp_email(email, otp):
-#     subject = 'Your OTP Code'
-#     message = f'Your OTP is {otp}'
-#     from_email = 'your_email@gmail.com'  # Replace with your Gmail address
-#     recipient_list = [email]
-
-#     # Use certifi's CA bundle for SSL context
-#     context = ssl.create_default_context(cafile=certifi.where())
-
-#     host=config('EMAIL_HOST')
-#     print(f'host = {host}')
-#     port=config('EMAIL_PORT', cast=int)
-#     username=config('EMAIL_HOST_USER')
-#     password=config('EMAIL_HOST_PASSWORD')
-#     use_tls=config('EMAIL_USE_TLS', cast=bool)
-#     ssl_context=context
-
-#     # Create a custom EmailBackend with the SSL context
-#     connection = EmailBackend(
-#         # host='smtp.gmail.com',           # Replace with your SMTP host if different
-#         # port=587,                        # Common port for TLS
-#         # username='sabarin992@gmail.com', # Replace with your Gmail address
-#         # password='rfly esiy kxku yhon',    # Replace with your app-specific password
-#         # use_tls=True,                    # Enable TLS
-#         # ssl_context=context              # Use the certifi SSL context
-
-#         host=config('EMAIL_HOST'),
-#         port=config('EMAIL_PORT', cast=int),
-#         username=config('EMAIL_HOST_USER'),
-#         password=config('EMAIL_HOST_PASSWORD'),
-#         use_tls=config('EMAIL_USE_TLS', cast=bool),
-#         ssl_context=context
-#     )
-
-#     try:
-#         send_mail(
-#             subject,
-#             message,
-#             from_email,
-#             recipient_list,
-#             fail_silently=False,
-#             connection=connection,       # Pass the custom connection
-#         )
-#     except Exception as e:
-#         print(e)
+        logging.info(f'Error sending OTP: {e}')
 
 
 
@@ -893,7 +844,6 @@ def get_all_products(request):
 def list_unlist_product(request,id):
     
     product = ProductVariant.objects.get(pk = id)
-    # print(f'The product = {product.product.is_active}')
     product.product.is_active = not product.product.is_active
     product.is_active = not product.is_active
     product.save()
@@ -979,8 +929,7 @@ def product_details(request,id):
                     color=color,
                     is_active=True
                 )
-                # Return the selected variant details
-                # print(selected_variant)
+
                 
                 is_in_wishlist = Wishlist.objects.filter(user=request.user, product_variant=product).exists() if not request.user.is_anonymous else False
                 # is_in_cart = CartItem.objects.filter(user=request.user, product_variant=product).exists()
@@ -1082,7 +1031,6 @@ def edit_user(request,id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_all_categories(request):
-    print(request.user)
     search = request.GET.get("search")
     if search:
         categories = Category.objects.filter(name__icontains=search).order_by("-created_at")
@@ -1413,7 +1361,6 @@ def remove_cartitem(request,id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def place_order(request):
-    print(request.data)
     user = CustomUser.objects.get(pk=request.user.id)
     address_id = request.data.get("address_id")
     cart_items = CartItem.objects.filter(user=user)
@@ -1557,7 +1504,6 @@ def update_order_payment(request):
 @permission_classes([IsAuthenticated])
 def get_all_orders(request):
     search = request.GET.get('search')
-    print(request.user)
     if not request.user.is_staff == True:
         user = CustomUser.objects.get(pk=request.user.id)
         orders = Order.objects.filter(user=user).order_by('-id')
@@ -1719,7 +1665,7 @@ def cancel_order_item(request, id):
     except OrderItem.DoesNotExist:
         return Response({'error': 'Order item not found.'}, status=status.HTTP_404_NOT_FOUND)
     except ValueError:
-        print('valuue error')
+        logging.info('value error')
         return HttpResponse('success')
     
 
@@ -2540,7 +2486,6 @@ def generate_pdf_report(report_data):
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def coupon_list(request):
-    print('coupon')
     """
     List all coupons or create a new coupon
     """

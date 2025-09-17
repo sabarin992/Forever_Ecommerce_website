@@ -77,7 +77,7 @@ const Navbar = () => {
         {isAuthenticated ? (
           <>
             <div className="group relative">
-              <Link>
+              <Link to={''}>
                 <img
                   className="w-5 cursor-pointer"
                   src={assets.profile_icon}
