@@ -96,9 +96,9 @@ const App = () => {
           <Route
             path="collection"
             element={
-              // <PrivateRoute>
+              <PrivateRoute>
                 <Collection />
-              // </PrivateRoute>
+               </PrivateRoute>
             }
           />
           <Route path="contact" element={<Contact />} />
@@ -122,9 +122,9 @@ const App = () => {
           <Route
             path="product/:productId"
             element={
-              // <PrivateRoute>
+              <PrivateRoute>
                 <Product />
-              // </PrivateRoute>
+               </PrivateRoute>
             }
           />
           <Route
@@ -160,7 +160,7 @@ const App = () => {
           <Route path = "logout" element = {<Logout/>}/>
         </Route>
 
-        <Route path="profile" element={<UserProfileLayout />}>
+        <Route path="profile" element={<PrivateRoute><UserProfileLayout /></PrivateRoute>}>
           <Route path="" element={<AccountOverview />} />
           <Route path="my-orders" element={<Orders />} />
           <Route path="manage-address" element={<ManageAddress />} />

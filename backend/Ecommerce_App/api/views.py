@@ -1206,6 +1206,7 @@ def get_all_addresses(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_address(request):
+
     user = CustomUser.objects.get(pk = request.user.id)
     name = request.data["name"]
     phone_no = request.data["phone_no"]
