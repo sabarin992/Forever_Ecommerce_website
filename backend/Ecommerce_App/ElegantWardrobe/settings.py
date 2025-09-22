@@ -152,8 +152,8 @@ AUTH_USER_MODEL = 'api.CustomUser'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  
-    "https://sabarinathem.xyz/",
-    "https://www.sabarinathem.xyz/",
+    "https://sabarinathem.xyz",
+    "https://www.sabarinathem.xyz",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
