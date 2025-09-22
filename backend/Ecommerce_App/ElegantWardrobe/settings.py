@@ -15,8 +15,7 @@ import os
 from datetime import timedelta
 from decouple import config
 import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+
 
 
 import certifi
@@ -33,9 +32,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["forever.sabarinathem.xyz","www.forever.sabarinathem.xyz","localhost","127.0.0.1"]
 
 
 # Application definition
@@ -89,27 +88,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ElegantWardrobe.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'forever',        # Database name
-        'USER': 'sabarinathem',         # Your PostgreSQL username
-        'PASSWORD': '',  # Your PostgreSQL password
+        'NAME': config('DATABASE_NAME'),        # Database name
+        'USER': config('DATABASE_USER'),         # Your PostgreSQL username
+        'PASSWORD': config('DATABASE_PASSWORD'),  # Your PostgreSQL password
         'HOST': 'localhost',        # Database host (e.g., 'localhost' or '127.0.0.1')
         'PORT': '5432',             # Default PostgreSQL port
     }
 }
+
+
 
 
 # Password validation
@@ -158,27 +151,25 @@ AUTH_USER_MODEL = 'api.CustomUser'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # React frontend
+    "http://localhost:5173",  
+    "https://sabarinathem.xyz/",
+    "https://www.sabarinathem.xyz/",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "https://sabarinathem.xyz",
 ]
 
 
 # Allow cookies to be sent
 CORS_ALLOW_CREDENTIALS = True
 
-
-# media
-# ====
-
-
-
-
-
 # jwt configuration
 # =================
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'api.authentication.JWTCookieAuthentication',
     ),
      'DEFAULT_PERMISSION_CLASSES': [
