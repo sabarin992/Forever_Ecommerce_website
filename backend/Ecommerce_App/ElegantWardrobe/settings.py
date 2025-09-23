@@ -231,3 +231,11 @@ SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_DOMAIN = ".sabarinathem.xyz"
 CSRF_COOKIE_DOMAIN = ".sabarinathem.xyz"
 
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
