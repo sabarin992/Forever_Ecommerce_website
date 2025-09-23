@@ -239,3 +239,11 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+    "x-requested-with",
+]
