@@ -218,4 +218,16 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'  # URL path for media files
 
 
+# settings.py
+
+
+
+# For cookies:
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
+
+SESSION_COOKIE_DOMAIN = ".sabarinathem.xyz"
+CSRF_COOKIE_DOMAIN = ".sabarinathem.xyz"
 
