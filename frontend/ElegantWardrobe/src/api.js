@@ -1,7 +1,8 @@
 import axios from "axios";
 import { USER_ACCESS_TOKEN, USER_REFRESH_TOKEN, ADMIN_ACCESS_TOKEN, ADMIN_REFRESH_TOKEN } from "./constants";
+import { Import } from "lucide-react";
 // export const API_BASE_URL = "https://forever.sabarinathem.xyz/api";
-export const API_BASE_URL = "http://127.0.0.1:8000/api";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
