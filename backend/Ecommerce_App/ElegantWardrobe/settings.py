@@ -150,16 +150,34 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'api.CustomUser'
 
 
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",  
+#     "https://sabarinathem.xyz",
+#     "https://www.sabarinathem.xyz",
+# ]
+
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:5173",
+#     "https://sabarinathem.xyz",
+# ]
+
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  
+    "http://localhost:5173",
     "https://sabarinathem.xyz",
     "https://www.sabarinathem.xyz",
+    "https://forever.sabarinathem.xyz",
+    "https://www.forever.sabarinathem.xyz",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://sabarinathem.xyz",
+    "https://www.sabarinathem.xyz",
+    "https://forever.sabarinathem.xyz",
+    "https://www.forever.sabarinathem.xyz",
 ]
+
 
 
 # Allow cookies to be sent
