@@ -274,14 +274,6 @@ const PlaceOrder = () => {
             });
 
             const res = await api.post(`/place_order/`, {
-              address_id: shipAddress,
-
-              // totalAmount - (Discounted amount)
-              // ===================================
-
-              // total: discount
-              //   ? (totalAmount ) - (totalAmount * (discount / 100))
-              //   : totalAmount,
 
               // totalAmount only
               address_id: shipAddress,

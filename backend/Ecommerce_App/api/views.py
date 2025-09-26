@@ -471,7 +471,7 @@ def google_login(request):
             httponly=True,
             secure=True,
             samesite='None',
-            max_age=7 * 24 * 3600,  # Refresh token expiry (e.g., 7 days)
+            max_age=7 * 24 * 3600  # Refresh token expiry (e.g., 7 days)
         )
 
         return response

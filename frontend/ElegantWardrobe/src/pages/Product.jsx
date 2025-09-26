@@ -258,7 +258,7 @@ const Product = () => {
             {/* Product Images */}
             <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
               <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full max-h-[500px]">
-               {productData.images && productData.images.map((item, index) => (
+               {productData?.images && productData?.images?.map((item, index) => (
                   <img
                     onClick={() => {
                       setImage(item);
@@ -381,7 +381,7 @@ const Product = () => {
                 <div className="flex flex-wrap gap-3">
                   {[
                     ...new Map(
-                      productData?.sizes.map((item) => [item.size, item])
+                      productData?.sizes?.map((item) => [item.size, item])
                     ).values(),
                   ]
                     .sort((a, b) => {
@@ -466,7 +466,7 @@ const Product = () => {
               </div> */}
               {/* Stock Status */}
               <div className="flex items-center gap-3">
-                {productData.stock_quantity > 0 ? (
+                {productData?.stock_quantity > 0 ? (
                   <>
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-green-600 font-semibold">
