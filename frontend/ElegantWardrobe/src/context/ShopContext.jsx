@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState } from "react";
-// import { products } from "../assets/assets";
 import { toast } from "react-toastify";
-import api from "../api";
+import api from "../api"; // Make sure this path is correct
 
 export const ShopContext = createContext();
 
@@ -42,8 +41,8 @@ const ShopContextProvider = (props) => {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const res = await api.get("/products/", { withCredentials: true });
-
+        // Remove withCredentials from individual requests since it's set globally
+        const res = await api.get("/products/");
         setProducts(res.data);
       } catch (error) {
         console.error("Error fetching products:", error.message);
@@ -53,40 +52,23 @@ const ShopContextProvider = (props) => {
   }, []);
 
   useEffect(() => {
-    // console.log('update cart data');
-
     const updateCart = async () => {
       if (cartId !== 0) {
         try {
-          const res = await api.put(
-            `/update_cart/${cartId}/`,
-            { quantity: quantity },
-            { withCredentials: true } // 👈 here too
-          );
+          // Remove withCredentials - it's already set in the instance
+          const res = await api.put(`/update_cart/${cartId}/`, { 
+            quantity: quantity 
+          });
 
           setIsChangeQuantity(!isChangeQuantity);
           setCartError(false);
-          // console.log(res.data);
         } catch (error) {
-          // catch (error) {
-          //   setCartError(true)
-          //   if (error?.response?.data?.error) {
-          //     const match = error?.response?.data?.error.match(/'([^']+)'/);
-          //     const cleanMessage = match
-          //       ? match[1]
-          //       : error?.response?.data?.error;
-
-          //     console.log(cleanMessage);
-          //     toast.error(cleanMessage);
-          //   }
-          // }
           setCartError(true);
           const errorData = error?.response?.data;
 
           if (errorData?.error) {
-            // Handle string or array type error messages
             const cleanMessage = Array.isArray(errorData.error)
-              ? errorData.error[0] // take first error message
+              ? errorData.error[0]
               : errorData.error;
 
             console.log(cleanMessage);
@@ -95,7 +77,6 @@ const ShopContextProvider = (props) => {
             toast.error("Failed to update cart.");
           }
         }
-      } else {
       }
     };
     updateCart();
@@ -103,15 +84,13 @@ const ShopContextProvider = (props) => {
 
   // useEffect for get all cart product
   useEffect(() => {
-    // console.log('Get all cart data');
     const getCartDatas = async () => {
       try {
+        // Remove withCredentials from individual requests
         const res = await api.get("/get_all_cart_products/", {
-          params: { page: activePage },
-          withCredentials: true, // 👈 here
+          params: { page: activePage }
         });
 
-        // console.log(res.data.cart_data);
         console.log(res.data.cart_data.results);
 
         setCartData(res.data.cart_data.results);
@@ -122,38 +101,39 @@ const ShopContextProvider = (props) => {
         setTotalDiscount(res.data.total_discount);
         setCartCount(res.data.cart_count);
       } catch (error) {
-        console.log("error");
+        console.log("error fetching cart data:", error);
       }
     };
     getCartDatas();
-
-    // setCartData(tempData)
   }, [quantity, isRomoveCartItem, isChangeQuantity, isAddToCart, activePage]);
 
   // useEffect for get all wishlist product
   useEffect(() => {
     const getWishListItems = async () => {
       try {
-        const res = await api.get("/get_all_wishlist_products/", {
-          withCredentials: true,
-        });
+        // Remove withCredentials from individual requests
+        const res = await api.get("/get_all_wishlist_products/");
 
         setWishListItems(res.data.wishlist_data);
         setWishListCount(res.data.wishlist_count);
-      } catch (error) {}
+      } catch (error) {
+        console.log("error fetching wishlist:", error);
+      }
     };
     getWishListItems();
   }, [isAddToCart, isChangeWishList]);
 
   const removeCartItem = async (id) => {
     try {
-      const res = await api.delete(`/remove_cartitem/${id}/`, {
-        withCredentials: true,
-      });
+      // Remove withCredentials from individual requests
+      const res = await api.delete(`/remove_cartitem/${id}/`);
 
       setIsRomoveCartItem(!isRomoveCartItem);
       toast.success(res.data);
-    } catch (error) {}
+    } catch (error) {
+      console.log("error removing cart item:", error);
+      toast.error("Failed to remove item from cart");
+    }
   };
 
   const value = {
