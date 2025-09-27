@@ -1,7 +1,6 @@
-import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-// import api from "../api"; // Make sure this path is correct
+import api from "../api"; // Make sure this path is correct
 
 export const ShopContext = createContext();
 
@@ -37,15 +36,8 @@ const ShopContextProvider = (props) => {
   const [totalPages, setTotalPages] = useState(0);
   const [cartError, setCartError] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const api = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true, // This ensures cookies are sent
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
 
+  
   // Fetch products when ShopContextProvider mounts
   useEffect(() => {
     const fetchAllProducts = async () => {

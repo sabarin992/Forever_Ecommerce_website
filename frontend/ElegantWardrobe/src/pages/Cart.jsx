@@ -10,25 +10,45 @@ import Pagination from "@/components/Pagination";
 import ConfirmModal from "@/ConfirmModal";
 
 const Cart = () => {
-  const {
-    currency,
-    cartData,
-    totalPrice,
-    totalDiscount,
-    quantity,
-    setQuantity,
-    setCartId,
-    removeCartItem,
-    activePage,
-    setActivePage,
-    hasNext,
-    hasPrevious,
-    totalPages,
-    cartError,
-  } = useContext(ShopContext);
+  // const {
+  //   currency,
+  //   cartData,
+  //   totalPrice,
+  //   totalDiscount,
+  //   quantity,
+  //   setQuantity,
+  //   setCartId,
+  //   removeCartItem,
+  //   activePage,
+  //   setActivePage,
+  //   hasNext,
+  //   hasPrevious,
+  //   totalPages,
+  //   cartError,
+  // } = useContext(ShopContext);
+  const currency = "₹";
+  const [cartItems, setCartItems] = useState({});
+  const [cartCount, setCartCount] = useState(0);
+  const [isRomoveCartItem, setIsRomoveCartItem] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [cartData, setCartData] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
+  const [cartId, setCartId] = useState(0);
+  const [isChangeQuantity, setIsChangeQuantity] = useState(false);
+  const [isAddToCart, setIsAddToCart] = useState(false);
+  
+  const [activePage, setActivePage] = useState(1);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrevious, setHasPrevious] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [cartError, setCartError] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const navigate = useNavigate();
   const [isModalOpen,setIsModalOpen] = useState(false);
   const [productId,setProductId] = useState(null)
+
 
   // const removeCartItem = async(id)=>{
   //     try {
@@ -42,6 +62,75 @@ const Cart = () => {
   // }
 
   console.log(cartData)
+
+useEffect(() => {
+    const getCartDatas = async () => {
+      try {
+        // Remove withCredentials from individual requests
+        const res = await api.get("/get_all_cart_products/", {
+          params: { page: 1 }
+        });
+
+        console.log(res.data.cart_data.results);
+
+        setCartData(res.data.cart_data.results);
+        setHasNext(res.data.cart_data.has_next);
+        setHasPrevious(res.data.cart_data.has_previous);
+        setTotalPages(res.data.cart_data.total_pages);
+        setTotalPrice(res.data.total_price);
+        setTotalDiscount(res.data.total_discount);
+        setCartCount(res.data.cart_count);
+      } catch (error) {
+        console.log("error fetching cart data:", error);
+      }
+    };
+    getCartDatas();
+  }, [quantity, isRomoveCartItem, isChangeQuantity, isAddToCart, activePage]);
+
+
+    useEffect(() => {
+    const updateCart = async () => {
+      if (cartId !== 0) {
+        try {
+          // Remove withCredentials - it's already set in the instance
+          const res = await api.put(`/update_cart/${cartId}/`, { 
+            quantity: quantity 
+          });
+
+          setIsChangeQuantity(!isChangeQuantity);
+          setCartError(false);
+        } catch (error) {
+          setCartError(true);
+          const errorData = error?.response?.data;
+
+          if (errorData?.error) {
+            const cleanMessage = Array.isArray(errorData.error)
+              ? errorData.error[0]
+              : errorData.error;
+
+            console.log(cleanMessage);
+            toast.error(cleanMessage);
+          } else {
+            toast.error("Failed to update cart.");
+          }
+        }
+      }
+    };
+    updateCart();
+  }, [quantity]);
+
+  const removeCartItem = async (id) => {
+    try {
+      // Remove withCredentials from individual requests
+      const res = await api.delete(`/remove_cartitem/${id}/`);
+
+      setIsRomoveCartItem(!isRomoveCartItem);
+      toast.success(res.data);
+    } catch (error) {
+      console.log("error removing cart item:", error);
+      toast.error("Failed to remove item from cart");
+    }
+  };
 
 
   const handleConfirmDeleteCartItem = () =>{
