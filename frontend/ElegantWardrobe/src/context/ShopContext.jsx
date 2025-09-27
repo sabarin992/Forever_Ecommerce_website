@@ -42,7 +42,8 @@ const ShopContextProvider = (props) => {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const res = await api.get("/products/");
+        const res = await api.get("/products/", { withCredentials: true });
+
         setProducts(res.data);
       } catch (error) {
         console.error("Error fetching products:", error.message);
@@ -57,9 +58,12 @@ const ShopContextProvider = (props) => {
     const updateCart = async () => {
       if (cartId !== 0) {
         try {
-          const res = await api.put(`/update_cart/${cartId}/`, {
-            quantity: quantity,
-          });
+          const res = await api.put(
+            `/update_cart/${cartId}/`,
+            { quantity: quantity },
+            { withCredentials: true } // 👈 here too
+          );
+
           setIsChangeQuantity(!isChangeQuantity);
           setCartError(false);
           // console.log(res.data);
@@ -104,7 +108,9 @@ const ShopContextProvider = (props) => {
       try {
         const res = await api.get("/get_all_cart_products/", {
           params: { page: activePage },
+          withCredentials: true, // 👈 here
         });
+
         // console.log(res.data.cart_data);
         console.log(res.data.cart_data.results);
 
@@ -128,7 +134,10 @@ const ShopContextProvider = (props) => {
   useEffect(() => {
     const getWishListItems = async () => {
       try {
-        const res = await api.get("/get_all_wishlist_products/");
+        const res = await api.get("/get_all_wishlist_products/", {
+          withCredentials: true,
+        });
+
         setWishListItems(res.data.wishlist_data);
         setWishListCount(res.data.wishlist_count);
       } catch (error) {}
@@ -138,7 +147,10 @@ const ShopContextProvider = (props) => {
 
   const removeCartItem = async (id) => {
     try {
-      const res = await api.delete(`/remove_cartitem/${id}/`);
+      const res = await api.delete(`/remove_cartitem/${id}/`, {
+        withCredentials: true,
+      });
+
       setIsRomoveCartItem(!isRomoveCartItem);
       toast.success(res.data);
     } catch (error) {}
