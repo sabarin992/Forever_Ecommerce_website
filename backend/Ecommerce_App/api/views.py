@@ -90,7 +90,7 @@ def querydict_to_dict(querydict):
                 data["variants"][index]["price"] = value[0]
             elif "stock_quantity" in key:
                 data["variants"][index]["stock_quantity"] = value[0]
-            elif "images" in key:
+            elif "images" in key:       
                 data["variants"][index]["images"].append(value[0])
 
     # Convert defaultdict to a normal list
