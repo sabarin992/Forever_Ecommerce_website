@@ -67,7 +67,7 @@ useEffect(() => {
     const getCartDatas = async () => {
       try {
         // Remove withCredentials from individual requests
-        const res = await api.get("/get_all_cart_products/", {
+        const res = await api.get("/get_all_cart_products", {
           params: { page: 1 }
         });
 
