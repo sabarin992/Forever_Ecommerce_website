@@ -72,7 +72,7 @@ const Cart = () => {
 
         console.log(res.data.cart_data.results);
 
-        setCartData(res.data.cart_data);
+        setCartData(res.data.cart_data.results);
         // setHasNext(res.data.cart_data.has_next);
         // setHasPrevious(res.data.cart_data.has_previous);
         // setTotalPages(res.data.cart_data.total_pages);
