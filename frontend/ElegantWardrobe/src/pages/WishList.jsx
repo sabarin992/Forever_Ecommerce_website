@@ -36,6 +36,9 @@ const WishList = () => {
 
         setWishListItems(res.data.wishlist_data);
         setWishListCount(res.data.wishlist_count);
+        console.log(res.data)
+        console.log('get wishlist data');
+        
       } catch (error) {
         console.log("error fetching wishlist:", error);
       }
