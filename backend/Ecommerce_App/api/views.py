@@ -1311,7 +1311,7 @@ def get_all_cart_products(request):
     carts = CartItem.objects.filter(user=request.user).order_by('id')  # or 'created_at', 'product__name', etc.
     total_price = carts.aggregate(Sum('total_price'))
     total_discount = carts.aggregate(Sum('total_discount'))
-    data = paginate_queryset(carts,5,request)
+    # data = paginate_queryset(carts,5,request)
     cart_data = [
         {"id":item.id,
         "image":request.build_absolute_uri(item.get_variant_image()),
@@ -1324,14 +1324,18 @@ def get_all_cart_products(request):
          "discount_offer" : item.get_offer_amount()
 
                   }
-                 for item in data["products"]
+                #  for item in data["products"]
+                 for item in carts
                  ]
     
-    response = data['paginator'].get_paginated_response(cart_data)
-    response.data['has_next'] = bool(data['paginator'].get_next_link())
-    response.data['has_previous'] = bool(data['paginator'].get_previous_link())
-    response.data['total_pages'] = data['total_pages']
-    response = {'cart_data':response.data,'total_price':total_price['total_price__sum'],'total_discount':total_discount['total_discount__sum'],'cart_count':carts.count()}
+    # response = data['paginator'].get_paginated_response(cart_data)
+    # response.data['has_next'] = bool(data['paginator'].get_next_link())
+    # response.data['has_previous'] = bool(data['paginator'].get_previous_link())
+    # response.data['total_pages'] = data['total_pages']
+    
+    
+    # response = {'cart_data':response.data,'total_price':total_price['total_price__sum'],'total_discount':total_discount['total_discount__sum'],'cart_count':carts.count()}
+    response = {'cart_data':cart_data,'total_price':total_price['total_price__sum'],'total_discount':total_discount['total_discount__sum'],'cart_count':carts.count()}
     return Response(response,status=status.HTTP_200_OK)
 
 @api_view(['PUT'])

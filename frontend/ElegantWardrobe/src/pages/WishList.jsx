@@ -11,7 +11,7 @@ const WishList = () => {
   const [selectedWishListId, setSelectedWishListId] = useState(null);
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const [selectedCartItem, setSelectedCartItem] = useState(null);
-  
+
   // const {
     // currency,
     // wishlistItems,
@@ -32,7 +32,6 @@ const WishList = () => {
   useEffect(() => {
     const getWishListItems = async () => {
       try {
-        // Remove withCredentials from individual requests
         const res = await api.get("/get_all_wishlist_products/");
 
         setWishListItems(res.data.wishlist_data);

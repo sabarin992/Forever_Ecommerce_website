@@ -66,19 +66,19 @@ const Cart = () => {
     const getCartDatas = async () => {
       try {
         // Remove withCredentials from individual requests
-        const res = await api.get("get_all_cart_products", {
-          params: { page: 1 },
+        const res = await api.get("/get_all_cart_products/", {
+          // params: { page: 1 },
         });
 
         console.log(res.data.cart_data.results);
 
-        setCartData(res.data.cart_data.results);
-        setHasNext(res.data.cart_data.has_next);
-        setHasPrevious(res.data.cart_data.has_previous);
-        setTotalPages(res.data.cart_data.total_pages);
-        setTotalPrice(res.data.total_price);
-        setTotalDiscount(res.data.total_discount);
-        setCartCount(res.data.cart_count);
+        setCartData(res.data.cart_data);
+        // setHasNext(res.data.cart_data.has_next);
+        // setHasPrevious(res.data.cart_data.has_previous);
+        // setTotalPages(res.data.cart_data.total_pages);
+        // setTotalPrice(res.data.total_price);
+        // setTotalDiscount(res.data.total_discount);
+        // setCartCount(res.data.cart_count);
       } catch (error) {
         console.log("error fetching cart data:", error);
       }
@@ -378,13 +378,13 @@ const Cart = () => {
               </div>
             </div>
           </div>
-          <Pagination
+          {/* <Pagination
             activePage={activePage}
             setActivePage={setActivePage}
             hasNext={hasNext}
             hasPrevious={hasPrevious}
             totalPages={totalPages}
-          />
+          /> */}
 
           <ConfirmModal
             isOpen={isModalOpen}
