@@ -2072,30 +2072,29 @@ def is_product_in_wishlist(request, product_variant_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_wishlist_products(request):
-    return Response('WishListPage')
-    # user = request.user
-    # wishlist_items = Wishlist.objects.filter(user=user)
-    # wishlist_data = [
-    #     {
-    #         "id": item.id,
-    #         "id": item.product_variant.id,
-    #         "name": item.product_variant.product.name,
-    #         "price": item.product_variant.price,
-    #         "size":item.product_variant.size,
-    #         "color":item.product_variant.color,
-    #         "image": request.build_absolute_uri(
-    #             item.product_variant.product.product_image.filter(
-    #                 product=item.product_variant.product,
-    #                 variant=item.product_variant,
-    #                 is_primary=True
-    #             ).first().image.url
-    #         ) if item.product_variant.product.product_image.exists() else None,
-    #         "stock_quantity":item.product_variant.stock_quantity
-    #     }
-    #     for item in wishlist_items
-    # ]
-    # response = {'wishlist_data':wishlist_data,'wishlist_count':wishlist_items.count()}
-    # return Response(response, status=status.HTTP_200_OK)
+    user = request.user
+    wishlist_items = Wishlist.objects.filter(user=user)
+    wishlist_data = [
+        {
+            "id": item.id,
+            "id": item.product_variant.id,
+            "name": item.product_variant.product.name,
+            "price": item.product_variant.price,
+            "size":item.product_variant.size,
+            "color":item.product_variant.color,
+            # "image": request.build_absolute_uri(
+            #     item.product_variant.product.product_image.filter(
+            #         product=item.product_variant.product,
+            #         variant=item.product_variant,
+            #         is_primary=True
+            #     ).first().image.url
+            # ) if item.product_variant.product.product_image.exists() else None,
+            # "stock_quantity":item.product_variant.stock_quantity
+        }
+        for item in wishlist_items
+    ]
+    response = {'wishlist_data':wishlist_data,'wishlist_count':wishlist_items.count()}
+    return Response(response, status=status.HTTP_200_OK)
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
