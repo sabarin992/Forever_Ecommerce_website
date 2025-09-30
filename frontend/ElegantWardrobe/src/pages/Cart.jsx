@@ -73,12 +73,12 @@ const Cart = () => {
         console.log(res.data.cart_data.results);
 
         setCartData(res.data.cart_data.results);
-        // setHasNext(res.data.cart_data.has_next);
-        // setHasPrevious(res.data.cart_data.has_previous);
-        // setTotalPages(res.data.cart_data.total_pages);
-        // setTotalPrice(res.data.total_price);
-        // setTotalDiscount(res.data.total_discount);
-        // setCartCount(res.data.cart_count);
+        setHasNext(res.data.cart_data.has_next);
+        setHasPrevious(res.data.cart_data.has_previous);
+        setTotalPages(res.data.cart_data.total_pages);
+        setTotalPrice(res.data.total_price);
+        setTotalDiscount(res.data.total_discount);
+        setCartCount(res.data.cart_count);
       } catch (error) {
         console.log("error fetching cart data:", error);
       }
@@ -378,13 +378,13 @@ const Cart = () => {
               </div>
             </div>
           </div>
-          {/* <Pagination
+          <Pagination
             activePage={activePage}
             setActivePage={setActivePage}
             hasNext={hasNext}
             hasPrevious={hasPrevious}
             totalPages={totalPages}
-          /> */}
+          />
 
           <ConfirmModal
             isOpen={isModalOpen}
