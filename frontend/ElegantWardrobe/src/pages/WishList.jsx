@@ -11,16 +11,38 @@ const WishList = () => {
   const [selectedWishListId, setSelectedWishListId] = useState(null);
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const [selectedCartItem, setSelectedCartItem] = useState(null);
-  const {
-    currency,
-    wishlistItems,
-    isAddToCart,
-    setIsAddToCart,
-    isChangeWishList,
-    setIsChangeWishList,
-  } = useContext(ShopContext);
+  
+  // const {
+    // currency,
+    // wishlistItems,
+    // isAddToCart,
+    // setIsAddToCart,
+    // isChangeWishList,
+    // setIsChangeWishList,
+  // } = useContext(ShopContext);
+
+  const currency = "₹";
+  const [wishlistItems, setWishListItems] = useState([]);
+  const [isChangeWishList, setIsChangeWishList] = useState(false);
+  const [wishListCount, setWishListCount] = useState(0);
+  const [isAddToCart, setIsAddToCart] = useState(false);
 
   // // The below 3 function is for wishlist delete confirmation modal
+
+  useEffect(() => {
+    const getWishListItems = async () => {
+      try {
+        // Remove withCredentials from individual requests
+        const res = await api.get("/get_all_wishlist_products/");
+
+        setWishListItems(res.data.wishlist_data);
+        setWishListCount(res.data.wishlist_count);
+      } catch (error) {
+        console.log("error fetching wishlist:", error);
+      }
+    };
+    getWishListItems();
+  }, [isAddToCart, isChangeWishList]);
 
   console.log(wishlistItems);
 
