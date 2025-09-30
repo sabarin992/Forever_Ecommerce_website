@@ -35,7 +35,7 @@ const WishList = () => {
         const res = await api.get("/get_all_wishlist_products/");
 
         setWishListItems(res.data.wishlist_data);
-        // setWishListCount(res.data.wishlist_count);
+        setWishListCount(res.data.wishlist_count);
         console.log(res)
         console.log('get wishlist data');
         
