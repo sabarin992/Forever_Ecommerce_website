@@ -70,7 +70,7 @@ const Cart = () => {
         //   params: { page: activePage },
         // });
 
-        const res = await api.get(`/get_all_cart_products/?page=${activePage}`);
+        const res = await api.get(`/get_all_cart_products/`);
 
         console.log(res.data.cart_data.results);
 
