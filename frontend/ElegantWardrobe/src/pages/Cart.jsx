@@ -66,9 +66,7 @@ const Cart = () => {
     const getCartDatas = async () => {
       try {
         // Remove withCredentials from individual requests
-        const res = await api.get("/get_all_cart_products/", {
-          params: { page: 1 },
-        });
+        const res = await api.get("/get_all_cart_products/");
 
         console.log(res.data.cart_data.results);
 
