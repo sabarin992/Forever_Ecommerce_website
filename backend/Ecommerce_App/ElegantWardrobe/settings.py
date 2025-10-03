@@ -154,11 +154,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  
     "https://sabarinathem.xyz",
     "https://www.sabarinathem.xyz",
+    "https://forever.sabarinathem.xyz",   # ✅ backend domain
+    "https://www.forever.sabarinathem.xyz", # ✅ backend with www
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://sabarinathem.xyz",
+    "https://forever.sabarinathem.xyz",
+    "https://www.forever.sabarinathem.xyz",
 ]
 
 
