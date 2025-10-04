@@ -26,6 +26,7 @@ const Cart = () => {
   //   totalPages,
   //   cartError,
   // } = useContext(ShopContext);
+  const [sample,setSameple] = useState('')
   const currency = "₹";
   const [cartItems, setCartItems] = useState({});
   const [cartCount, setCartCount] = useState(0);
@@ -66,19 +67,22 @@ const Cart = () => {
     const getCartDatas = async () => {
       try {
         // Remove withCredentials from individual requests
-        const res = await api.get(`/get_all_cart_products/`, {
-          params: { page: activePage },
+        const res = await api.get(`/get_all_cart_products/`,{
+          params:{page:1},
         });
+        setSameple(res.data)
 
-        console.log(res.data.cart_data.results);
+        console.log(res.data)
 
-        setCartData(res.data.cart_data.results);
-        setHasNext(res.data.cart_data.has_next);
-        setHasPrevious(res.data.cart_data.has_previous);
-        setTotalPages(res.data.cart_data.total_pages);
-        setTotalPrice(res.data.total_price);
-        setTotalDiscount(res.data.total_discount);
-        setCartCount(res.data.cart_count);
+        // console.log(res.data.cart_data.results);
+
+        // setCartData(res.data.cart_data.results);
+        // setHasNext(res.data.cart_data.has_next);
+        // setHasPrevious(res.data.cart_data.has_previous);
+        // setTotalPages(res.data.cart_data.total_pages);
+        // setTotalPrice(res.data.total_price);
+        // setTotalDiscount(res.data.total_discount);
+        // setCartCount(res.data.cart_count);
       } catch (error) {
         console.log("error fetching cart data:", error);
       }
@@ -137,6 +141,7 @@ const Cart = () => {
 
   return (
     <>
+    <h1>{sample}</h1>
       {cartData.length > 0 ? (
         <div className="border-t pt-14">
           <div className="text-2xl mb-3">
