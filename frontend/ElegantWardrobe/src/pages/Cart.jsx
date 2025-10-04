@@ -67,7 +67,7 @@ const Cart = () => {
     const getCartDatas = async () => {
       try {
         // Remove withCredentials from individual requests
-        const res = await api.get(`/get_all_cart_products/?page=${1}`);
+        const res = await api.get(`/get_all_cart_products/?page=${activePage}`);
         setSameple(res.data)
 
         console.log(res.data)
