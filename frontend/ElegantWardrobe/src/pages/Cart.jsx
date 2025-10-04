@@ -65,10 +65,9 @@ const Cart = () => {
 
   useEffect(() => {
     const getCartDatas = async () => {
-      console.log(activePage)
       try {
         // Remove withCredentials from individual requests
-        const res = await api.get(`/get_all_cart_products/?page=1`);
+        const res = await api.get(`/get_all_cart_products/?page=${1}`);
         setSameple(res.data)
 
         console.log(res.data)
