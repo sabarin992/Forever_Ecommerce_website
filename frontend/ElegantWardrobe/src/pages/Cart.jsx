@@ -68,19 +68,17 @@ const Cart = () => {
       try {
         // Remove withCredentials from individual requests
         const res = await api.get(`/get_all_cart_products/?page=${activePage}`);
-        setSameple(res.data)
+        
 
-        console.log(res.data)
+        console.log(res.data.cart_data.results);
 
-        // console.log(res.data.cart_data.results);
-
-        // setCartData(res.data.cart_data.results);
-        // setHasNext(res.data.cart_data.has_next);
-        // setHasPrevious(res.data.cart_data.has_previous);
-        // setTotalPages(res.data.cart_data.total_pages);
-        // setTotalPrice(res.data.total_price);
-        // setTotalDiscount(res.data.total_discount);
-        // setCartCount(res.data.cart_count);
+        setCartData(res.data.cart_data.results);
+        setHasNext(res.data.cart_data.has_next);
+        setHasPrevious(res.data.cart_data.has_previous);
+        setTotalPages(res.data.cart_data.total_pages);
+        setTotalPrice(res.data.total_price);
+        setTotalDiscount(res.data.total_discount);
+        setCartCount(res.data.cart_count);
       } catch (error) {
         console.log("error fetching cart data:", error);
       }
