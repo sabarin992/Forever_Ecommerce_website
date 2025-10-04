@@ -32,7 +32,7 @@ const WishList = () => {
   useEffect(() => {
     const getWishListItems = async () => {
       try {
-        const res = await api.get("/get_all_wishlist_products/");
+        const res = await api.get(`get_all_wishlist_products`);
 
         setWishListItems(res.data.wishlist_data);
         setWishListCount(res.data.wishlist_count);
