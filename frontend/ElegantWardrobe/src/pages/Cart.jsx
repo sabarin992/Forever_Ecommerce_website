@@ -68,7 +68,7 @@ const Cart = () => {
       console.log(activePage)
       try {
         // Remove withCredentials from individual requests
-        const res = await api.get(`/get_all_cart_products/?page=${activePage}`);
+        const res = await api.get(`/get_all_cart_products/?page=1`);
         setSameple(res.data)
 
         console.log(res.data)
