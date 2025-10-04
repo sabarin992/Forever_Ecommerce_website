@@ -2073,6 +2073,7 @@ def is_product_in_wishlist(request, product_variant_id):
 @permission_classes([IsAuthenticated])
 def get_all_wishlist_products(request):
     user = request.user
+    logging.info(f'user = {user.first_name}')
     wishlist_items = Wishlist.objects.filter(user=user)
     wishlist_data = [
         {
