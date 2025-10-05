@@ -2078,7 +2078,7 @@ def get_all_wishlist_products(request):
     wishlist_data = [
         {
             "id": item.id,
-            "id": item.product_variant.id,
+            "variant_id": item.product_variant.id,
             "name": item.product_variant.product.name,
             "price": item.product_variant.price,
             "size":item.product_variant.size,

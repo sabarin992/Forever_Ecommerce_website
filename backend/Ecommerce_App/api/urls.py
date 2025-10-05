@@ -126,13 +126,4 @@ urlpatterns = [
     path('check-auth/',views.check_auth),
     path('check-admin-auth/',views.check_admin_auth),
 
-  
-
-    
-
-   
-
-
-
-
 ]
