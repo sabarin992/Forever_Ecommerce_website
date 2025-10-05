@@ -175,6 +175,8 @@ const Registration = () => {
       }
       
       else{
+        console.log(error);
+        
         toast.error("Error sending OTP. Please try again!");
       }
     } finally {
