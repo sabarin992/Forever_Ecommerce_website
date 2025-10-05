@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../api";
 import { toast } from "react-toastify";
 import { USER_ACCESS_TOKEN, USER_REFRESH_TOKEN } from "../constants";
@@ -18,6 +18,14 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const {isAuthenticated, setIsAuthenticated} = useContext(ShopContext)
+
+  useEffect(()=>{
+    if(isAuthenticated){
+    console.log('login redirecting');
+    
+    navigate("/")
+  }
+  },[])
 
   // Validation functions
   const validateEmail = (value) => {
@@ -114,7 +122,7 @@ const Login = () => {
       console.log(res.data)
       toast.success("Login Successful");
       setIsAuthenticated(true)
-      navigate("/");
+      navigate("/",{ replace: true });
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         toast.error(error.response.data.error);

@@ -8,11 +8,16 @@ import ConfirmModal from "@/ConfirmModal";
 
 const Navbar = () => {
   const [visisble, setVisible] = useState(false);
-  const { setShowSearch, cartCount,wishListCount,isAuthenticated, setIsAuthenticated } = useContext(ShopContext);
+  const {
+    setShowSearch,
+    cartCount,
+    wishListCount,
+    isAuthenticated,
+    setIsAuthenticated,
+  } = useContext(ShopContext);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-
 
   const handleLogout = async () => {
     try {
@@ -63,6 +68,11 @@ const Navbar = () => {
         </NavLink>
       </ul>
       <div className="flex items-center gap-6">
+        {!isAuthenticated ? (
+          <span>
+            <button onClick={()=>{navigate('/login')}}>Login</button>
+          </span>
+        ) : null}
         <img
           onClick={() => {
             setShowSearch(true);
@@ -77,7 +87,7 @@ const Navbar = () => {
         {isAuthenticated ? (
           <>
             <div className="group relative">
-              <Link to={''}>
+              <Link to={""}>
                 <img
                   className="w-5 cursor-pointer"
                   src={assets.profile_icon}

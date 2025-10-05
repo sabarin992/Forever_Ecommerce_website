@@ -20,7 +20,7 @@ const GoogleAuth = () => {
       });
       setIsAuthenticated(true)
       toast.success("Login Successful");
-      navigate('/');
+      navigate('/',{ replace: true });
     } catch (error) {
       console.error('Login failed:', error);
     }
