@@ -52,90 +52,90 @@ const ShopContextProvider = (props) => {
     fetchAllProducts();
   }, []);
 
-  // useEffect(() => {
-  //   const updateCart = async () => {
-  //     if (cartId !== 0) {
-  //       try {
-  //         // Remove withCredentials - it's already set in the instance
-  //         const res = await api.put(`/update_cart/${cartId}/`, { 
-  //           quantity: quantity 
-  //         });
+  useEffect(() => {
+    const updateCart = async () => {
+      if (cartId !== 0) {
+        try {
+          // Remove withCredentials - it's already set in the instance
+          const res = await api.put(`/update_cart/${cartId}/`, { 
+            quantity: quantity 
+          });
 
-  //         setIsChangeQuantity(!isChangeQuantity);
-  //         setCartError(false);
-  //       } catch (error) {
-  //         setCartError(true);
-  //         const errorData = error?.response?.data;
+          setIsChangeQuantity(!isChangeQuantity);
+          setCartError(false);
+        } catch (error) {
+          setCartError(true);
+          const errorData = error?.response?.data;
 
-  //         if (errorData?.error) {
-  //           const cleanMessage = Array.isArray(errorData.error)
-  //             ? errorData.error[0]
-  //             : errorData.error;
+          if (errorData?.error) {
+            const cleanMessage = Array.isArray(errorData.error)
+              ? errorData.error[0]
+              : errorData.error;
 
-  //           console.log(cleanMessage);
-  //           toast.error(cleanMessage);
-  //         } else {
-  //           toast.error("Failed to update cart.");
-  //         }
-  //       }
-  //     }
-  //   };
-  //   updateCart();
-  // }, [quantity]);
+            console.log(cleanMessage);
+            toast.error(cleanMessage);
+          } else {
+            toast.error("Failed to update cart.");
+          }
+        }
+      }
+    };
+    updateCart();
+  }, [quantity]);
 
   // useEffect for get all cart product
-  // useEffect(() => {
-  //   const getCartDatas = async () => {
-  //     try {
-  //       // Remove withCredentials from individual requests
-  //       const res = await api.get("/get_all_cart_products/", {
-  //         params: { page: activePage }
-  //       });
+  useEffect(() => {
+    const getCartDatas = async () => {
+      try {
+        // Remove withCredentials from individual requests
+        const res = await api.get("/get_all_cart_products/", {
+          params: { page: activePage }
+        });
 
-  //       console.log(res.data.cart_data.results);
+        console.log(res.data.cart_data.results);
 
-  //       setCartData(res.data.cart_data.results);
-  //       setHasNext(res.data.cart_data.has_next);
-  //       setHasPrevious(res.data.cart_data.has_previous);
-  //       setTotalPages(res.data.cart_data.total_pages);
-  //       setTotalPrice(res.data.total_price);
-  //       setTotalDiscount(res.data.total_discount);
-  //       setCartCount(res.data.cart_count);
-  //     } catch (error) {
-  //       console.log("error fetching cart data:", error);
-  //     }
-  //   };
-  //   getCartDatas();
-  // }, [quantity, isRomoveCartItem, isChangeQuantity, isAddToCart, activePage]);
+        setCartData(res.data.cart_data.results);
+        setHasNext(res.data.cart_data.has_next);
+        setHasPrevious(res.data.cart_data.has_previous);
+        setTotalPages(res.data.cart_data.total_pages);
+        setTotalPrice(res.data.total_price);
+        setTotalDiscount(res.data.total_discount);
+        setCartCount(res.data.cart_count);
+      } catch (error) {
+        console.log("error fetching cart data:", error);
+      }
+    };
+    getCartDatas();
+  }, [quantity, isRomoveCartItem, isChangeQuantity, isAddToCart, activePage]);
 
   // useEffect for get all wishlist product
-  // useEffect(() => {
-  //   const getWishListItems = async () => {
-  //     try {
-  //       // Remove withCredentials from individual requests
-  //       const res = await api.get("/get_all_wishlist_products/");
+  useEffect(() => {
+    const getWishListItems = async () => {
+      try {
+        // Remove withCredentials from individual requests
+        const res = await api.get("/get_all_wishlist_products/");
 
-  //       setWishListItems(res.data.wishlist_data);
-  //       setWishListCount(res.data.wishlist_count);
-  //     } catch (error) {
-  //       console.log("error fetching wishlist:", error);
-  //     }
-  //   };
-  //   getWishListItems();
-  // }, [isAddToCart, isChangeWishList]);
+        setWishListItems(res.data.wishlist_data);
+        setWishListCount(res.data.wishlist_count);
+      } catch (error) {
+        console.log("error fetching wishlist:", error);
+      }
+    };
+    getWishListItems();
+  }, [isAddToCart, isChangeWishList]);
 
-  // const removeCartItem = async (id) => {
-  //   try {
-  //     // Remove withCredentials from individual requests
-  //     const res = await api.delete(`/remove_cartitem/${id}/`);
+  const removeCartItem = async (id) => {
+    try {
+      // Remove withCredentials from individual requests
+      const res = await api.delete(`/remove_cartitem/${id}/`);
 
-  //     setIsRomoveCartItem(!isRomoveCartItem);
-  //     toast.success(res.data);
-  //   } catch (error) {
-  //     console.log("error removing cart item:", error);
-  //     toast.error("Failed to remove item from cart");
-  //   }
-  // };
+      setIsRomoveCartItem(!isRomoveCartItem);
+      toast.success(res.data);
+    } catch (error) {
+      console.log("error removing cart item:", error);
+      toast.error("Failed to remove item from cart");
+    }
+  };
 
   const value = {
     products,
@@ -152,7 +152,7 @@ const ShopContextProvider = (props) => {
     quantity,
     setQuantity,
     setCartId,
-    // removeCartItem,
+    removeCartItem,
     isRomoveCartItem,
     setIsRomoveCartItem,
     cartCount,

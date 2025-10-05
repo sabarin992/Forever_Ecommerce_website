@@ -91,7 +91,7 @@ const WishlistTable = ({
               <button
                 onClick={() =>
                   handleAddToCartClick(
-                    item.id,
+                    item.variant_id,
                     item.size,
                     item.color,
                     item.quantity || 1
@@ -113,7 +113,7 @@ const WishlistTable = ({
                 ADD TO CART
               </button> */}
               <button
-                onClick={() => handleDeleteClick(item.id)}
+                onClick={() => handleDeleteClick(item.variant_id)}
                 // disabled={!item.inStock}
                 className="w-full md:w-auto bg-red-600 text-white py-2 px-4 uppercase text-sm tracking-wider hover:bg-red-800"
               >
