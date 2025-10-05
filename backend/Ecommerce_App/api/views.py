@@ -263,7 +263,8 @@ def login(request):
                 httponly=True,  # Prevent JavaScript access
                 secure=True,    # Use HTTPS in production
                 samesite='None',  # Prevent CSRF
-                max_age=3600    # Access token expiry (e.g., 1 hour)
+                max_age=3600,    # Access token expiry (e.g., 1 hour)
+                domain=".sabarinathem.xyz"
             )
             response.set_cookie(
                 key='refresh_token',
@@ -271,7 +272,8 @@ def login(request):
                 httponly=True,
                 secure=True,
                 samesite='None',
-                max_age=7 * 24 * 3600  # Refresh token expiry (e.g., 7 days)
+                max_age=7 * 24 * 3600,  # Refresh token expiry (e.g., 7 days)
+                domain=".sabarinathem.xyz"
             )
 
             return response
@@ -326,7 +328,8 @@ def refresh_token(request):
             httponly=True,
             secure=True,
             samesite='None',
-            max_age=3600  # Adjust based on access token lifetime
+            max_age=3600,  # Adjust based on access token lifetime
+            domain=".sabarinathem.xyz"
         )
 
         return response
@@ -385,7 +388,8 @@ def admin_login(request):
         httponly=True,  # Prevent JavaScript access
         secure=True,    # Use HTTPS in production
         samesite='None',  # Prevent CSRF
-        max_age=3600    # Access token expiry (e.g., 1 hour)
+        max_age=3600,    # Access token expiry (e.g., 1 hour)
+        domain=".sabarinathem.xyz"
     )
     response.set_cookie(
         key='refresh_token',
@@ -393,7 +397,8 @@ def admin_login(request):
         httponly=True,
         secure=True,
         samesite='None',
-        max_age=7 * 24 * 3600  # Refresh token expiry (e.g., 7 days)
+        max_age=7 * 24 * 3600,  # Refresh token expiry (e.g., 7 days)
+        domain=".sabarinathem.xyz"
     )
 
     return response
@@ -463,7 +468,8 @@ def google_login(request):
             httponly=True,  # Prevent JavaScript access
             secure=True,    # Use HTTPS in production
             samesite='None',  # Prevent CSRF
-            max_age=3600    # Access token expiry (e.g., 1 hour)
+            max_age=3600,    # Access token expiry (e.g., 1 hour)
+            domain=".sabarinathem.xyz"
         )
         response.set_cookie(
             key='refresh_token',
@@ -471,7 +477,8 @@ def google_login(request):
             httponly=True,
             secure=True,
             samesite='None',
-            max_age=7 * 24 * 3600  # Refresh token expiry (e.g., 7 days)
+            max_age=7 * 24 * 3600,  # Refresh token expiry (e.g., 7 days)
+            domain=".sabarinathem.xyz"
         )
 
         return response
