@@ -257,25 +257,6 @@ const PaymentFailed = () => {
             </span>
           </div>
 
-          {/* GST */}
-          {/* === */}
-
-          {/* <div className="flex justify-between">
-                <span className="text-gray-600">GST (12%):</span>
-                <span className="text-gray-800">{currency}{(orderDetails.total*12)/100}</span>
-              </div> */}
-
-          {/* Shipping Fee */}
-          {/* ============ */}
-
-          {/* <div className="flex justify-between">
-                <span className="text-gray-600">Shipping Fee:</span>
-                <span className="text-gray-800">{currency}100</span>
-              </div> */}
-
-          {/* Discounted Amount */}
-          {/* ================= */}
-
           <div className="flex justify-between">
             <span className="text-gray-600">Total Discount:</span>
             <span className="text-gray-800">

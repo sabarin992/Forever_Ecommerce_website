@@ -6,7 +6,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // ----- User API Instance -----
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // This ensures cookies are sent
+  withCredentials: true, 
   headers: {
     "Content-Type": "application/json",
   },

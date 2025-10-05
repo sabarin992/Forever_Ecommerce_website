@@ -180,8 +180,6 @@ const CategoryEdit = () => {
             console.log(res.data);
             if (res.status === 200) {
                 toast.success("Category updated successfully");
-                // Update original data to reflect the changes
-                // setOriginalData(categoryData);
                 setHasChanges(false);
                 setTouched({});
             } else {

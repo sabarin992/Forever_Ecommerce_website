@@ -70,12 +70,6 @@ const WishlistTable = ({
                 </span>
               )}
             </div>
-
-            {/* Stock Status
-            <div className="text-right md:text-center px-4 md:px-0 text-gray-600 mt-2 md:mt-0">
-              {item.inStock ? "In Stock" : "Out of Stock"}
-            </div> */}
-
             {/* size */}
             <div className="text-right md:text-center px-4 md:px-0 text-gray-600 mt-2 md:mt-0">
               {item.size}
@@ -102,19 +96,8 @@ const WishlistTable = ({
               >
                 ADD TO CART
               </button>
-
-              {/* <button
-                onClick={() => {
-                  onAddToCart(item.id, item.size, item.color); // here we want to add quantity. (onAddToCart(item.id,item.size,item.color,item.quantity))
-                }}
-                // disabled={!item.inStock}
-                className="w-full md:w-auto bg-black text-white py-2 px-4 uppercase text-sm tracking-wider hover:bg-gray-700"
-              >
-                ADD TO CART
-              </button> */}
               <button
                 onClick={() => handleDeleteClick(item.variant_id)}
-                // disabled={!item.inStock}
                 className="w-full md:w-auto bg-red-600 text-white py-2 px-4 uppercase text-sm tracking-wider hover:bg-red-800"
               >
                 x

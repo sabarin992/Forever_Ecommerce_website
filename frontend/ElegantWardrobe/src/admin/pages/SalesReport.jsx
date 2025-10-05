@@ -144,11 +144,6 @@ const SalesReport = () => {
     
     setDateRange(newRange);
     setShowDateFilter(false);
-
-    // if (newRange !== "custom") {
-    //   // If not custom, immediately fetch the report
-    //   setTimeout(() => fetchReport(), 0);
-    // }
   };
 
   const handleCustomRangeSubmit = () => {

@@ -105,22 +105,6 @@ export default function AdminUsers() {
                   </span>
                 </td>
                 <td className="py-3 px-4 border-b border-gray-200 flex gap-2">
-                  {/* <button
-                    onClick={() => {
-                      navigate("/admin/edit-user/", {
-                        state: {
-                          id: user.id,
-                          first_name: user.first_name,
-                          last_name: user.last_name,
-                          email: user.email,
-                          phone_number: user.phone_number,
-                        },
-                      });
-                    }}
-                    className="flex items-center px-3 py-1.5 text-white bg-black hover:bg-gray-800 rounded-lg text-sm"
-                  >
-                    ✏️ Edit
-                  </button> */}
                   <button
                     onClick={() => {
                       if (user.is_active) {

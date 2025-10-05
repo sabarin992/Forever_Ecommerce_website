@@ -184,9 +184,6 @@ const PlaceOrder = () => {
     }
     try {
       const res = await api.post(`/place_order/`, {
-        // address_id: shipAddress,
-        // total:totalAmount,
-        // discounted_amount: totalAmount * (discount / 100),
         address_id: shipAddress,
         total_price: totalPrice,
         total_discount: totalDiscount,
@@ -195,10 +192,6 @@ const PlaceOrder = () => {
 
         // totalAmount - (Discounted amount)
         // ===================================
-
-        // total: discount
-        //   ? (totalAmount) - (totalAmount * (discount / 100))
-        //   : totalAmount,
 
         couponCode: couponCode,
         payment_method: method,
@@ -245,13 +238,6 @@ const PlaceOrder = () => {
     try {
       const response = await api.post("create_order/", {
         // totalAmount only
-        // ================
-
-        // totalAmount:totalAmount
-
-        // totalAmount - (Discounted amount)
-        // ===================================
-
         totalAmount: getTotalPrice(),
       });
 
@@ -310,39 +296,6 @@ const PlaceOrder = () => {
           color: "#0d6efd",
         },
         modal: {
-          // ondismiss: async function () {
-          //   try {
-          //     const res = await api.post(`/place_order/`, {
-          //       address_id: shipAddress,
-          //       // total: discount
-          //       //   ? (totalAmount ) - (totalAmount * (discount / 100))
-          //       //   : totalAmount,
-
-          //       total:totalAmount,
-          //       discounted_amount: totalAmount * (discount / 100),
-          //       payment_method: method,
-          //       payment_status: 'PAYMENT_PENDING',
-          //       couponCode: couponCode,
-          //     });
-
-          //     toast.info("Payment was cancelled. Order placed with payment pending status.");
-          //     navigate("/payment-failed", {
-          //       state: {
-          //         orderId: res.data.order_id,
-          //         message: "Payment was cancelled but your order has been placed with payment pending status."
-          //       }
-          //     });
-          //   } catch (error) {
-          //     console.log(error.response?.data);
-          //     toast.error("Failed to place order with pending payment status.");
-          //     navigate("/payment-failed", {
-          //       state: {
-          //         orderId: createdOrderId,
-          //         error: "Failed to place order"
-          //       }
-          //     });
-          //   }
-          // },
           ondismiss: async function () {
             try {
               const res = await api.post(`/place_order/`, {
@@ -535,11 +488,6 @@ const PlaceOrder = () => {
           <div className="w-full text-end mt-8">
             <button
               onClick={
-                // method === "COD" || method === "WALLET"
-                //   ? handlePlaceOrder
-                //   : method === "RAZORPAY"
-                //   ? handlePayment
-                //   : () => {}
                 () => {
                   setIsModalOpen(true);
                   console.log("place order");

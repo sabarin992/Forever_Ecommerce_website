@@ -68,22 +68,6 @@ export default function AdminProducts() {
     <>
       <div className="container mx-auto p-4">
         <div className="flex justify-end mb-8">
-          {/* <div className="flex">
-            <div className="flex items-center justify-center bg-gray-50 p-4 border border-gray-200">
-              <Filter className="h-5 w-5" />
-            </div>
-            <div className="p-4 border-t border-b border-r border-gray-200">
-              Filter By
-            </div>
-            <div className="flex items-center justify-between p-4 border-t border-b border-r border-gray-200 min-w-[180px]">
-              <span>{date}</span>
-              <ChevronDown className="h-5 w-5 ml-2" />
-            </div>
-            <div className="flex items-center justify-between p-4 border-t border-b border-r border-gray-200 min-w-[180px]">
-              <span>Category</span>
-              <ChevronDown className="h-5 w-5 ml-2" />
-            </div>
-          </div> */}
           <Button
             variant="default"
             onClick={() => {

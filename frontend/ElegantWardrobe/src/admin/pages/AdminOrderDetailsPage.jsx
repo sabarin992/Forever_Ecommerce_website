@@ -402,39 +402,7 @@ function AdminOrderDetailsPage() {
         </div>
       </div>
 
-      {/* Cancellation & Return Details */}
-      {/* ================================ */}
-
-      {/* <div className="border border-orange-200 bg-orange-50 rounded-lg mb-6">
-        <div className="p-4 border-b border-orange-200">
-          <div className="flex items-center text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            <h2 className="text-lg font-semibold">Cancellation & Return Details</h2>
-          </div>
-        </div>
-        
-        <div className="flex border-b border-orange-200">
-          <div className="w-1/2 p-3 text-center font-medium border-r border-orange-200 text-orange-800">
-            Cancellation
-          </div>
-          <div className="w-1/2 p-3 text-center text-gray-500">
-            Return
-          </div>
-        </div>
-        
-        <div className="p-4 bg-yellow-50">
-          <div className="grid grid-cols-2 gap-y-3">
-            <div className="text-amber-800">Reason:</div>
-            <div className="text-gray-700">ordered_by_mistake</div>
-            
-            <div className="text-amber-800">Cancelled On:</div>
-            <div className="text-gray-700">5/4/2025, 5:12:56 PM</div>
-          </div>
-        </div>
-      </div> */}
-
+ 
       {/* Order Items */}
       <div className="border border-black rounded-lg p-4 md:p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Order Items</h2>
@@ -463,13 +431,10 @@ function AdminOrderDetailsPage() {
                   <td className="py-3 px-2">{item?.variant?.size}</td>
                   <td className="py-3 px-2 text-center">{item?.quantity}</td>
                   <td className="py-3 px-2 text-right">
-                    {/* <div className="text-xs text-gray-500 line-through">{</div> */}
                     <div>
                       {currency} {item.price}
                     </div>
                   </td>
-                  {/* <td className="py-3 px-2 text-right text-red-600">₹8490.00</td> */}
-                  {/* <td className="py-3 px-2 text-right font-medium">₹20404.30</td> */}
                   <td className="py-3 px-2 text-center">
                     <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
                       {item?.status}

@@ -57,22 +57,6 @@ const Wallet = () => {
         </p>
       </div>
 
-      {/* Summary Stats */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="text-center">
-          <h3 className="text-lg font-medium text-gray-700">Total Added</h3>
-          <p className="text-2xl font-bold text-gray-900">₹2,000</p>
-        </div>
-        <div className="text-center">
-          <h3 className="text-lg font-medium text-gray-700">Total Spent</h3>
-          <p className="text-2xl font-bold text-gray-900">₹13,534.4</p>
-        </div>
-        <div className="text-center">
-          <h3 className="text-lg font-medium text-gray-700">Transactions</h3>
-          <p className="text-2xl font-bold text-gray-900">{totalTransactions}</p>
-        </div>
-      </div> */}
-
       {/* Add Money Section */}
       <div className="flex flex-col sm:flex-row gap-2 mb-6">
         <input
@@ -111,12 +95,6 @@ const Wallet = () => {
               </div>
             );
           })}
-          {/* <div className="text-gray-600">
-            16/5/2025, 9:14:32 am - Deposit: <span className="font-medium text-gray-800">₹1,000</span> (Completed)
-          </div>
-          <div className="text-gray-600">
-            11/4/2025, 8:05:03 am - Deposit: <span className="font-medium text-gray-800">₹1,000</span> (Completed)
-          </div> */}
         </div>
       </div>
     </div>

@@ -69,9 +69,6 @@ const Orders = () => {
                     Order Number : {item.order_no}
                   </p>
                   <div className="flex items-center gap-3 mt-2 text-base text-gray-700">
-                    {/* <p className='text-lg'>{currency}{item.price}</p>
-                      <p>Quantity : 1</p>
-                      <p>Size : M</p> */}
                   </div>
                   <p>Payment Status : {item.payment_status}</p>
                   <p className="mt-2">

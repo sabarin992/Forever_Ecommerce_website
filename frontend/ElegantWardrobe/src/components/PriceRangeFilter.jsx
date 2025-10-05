@@ -59,13 +59,6 @@ const PriceRangeFilter = ({
                 </button>
               )}
             </div>
-
-            {/* <button
-              type="submit"
-              className="mt-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition duration-200 text-sm font-medium"
-            >
-              Go
-            </button> */}
           </form>
         </div>
       </div>

@@ -24,17 +24,7 @@ const AccountOverview = () => {
   };
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      {/* <header className="flex justify-between items-center px-4 py-4 border-b border-gray-200 md:px-6">
-      <h1 className="text-xl font-semibold text-gray-900">Profile</h1>
-      <div className="flex items-center space-x-2">
-        <a href="#" className="text-gray-600 hover:text-gray-900">
-          Home
-        </a>
-        <span className="text-gray-400">&gt;</span>
-        <span className="text-gray-900">Profile</span>
-      </div>
-    </header> */}
+  
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-6 md:px-6">
@@ -59,9 +49,7 @@ const AccountOverview = () => {
                   {userData.first_name} {userData.last_name}
                 </h3>
                 <div className="flex flex-col md:flex-row md:items-center text-gray-600 mt-1">
-                  {/* <span>Team Manager</span>
-                  <span className="hidden md:inline mx-2">|</span> */}
-
+                  
                   {userData.address ? (
                     <span>
                       {userData?.address?.city},{userData?.address?.state},
@@ -72,19 +60,6 @@ const AccountOverview = () => {
               </div>
             </div>
             <div className="flex items-center mt-4 md:mt-0 md:ml-auto space-x-3">
-              {/* <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50">
-                <Facebook className="w-5 h-5" />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50">
-                <Twitter className="w-5 h-5" />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50">
-                <Linkedin className="w-5 h-5" />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50">
-                <Instagram className="w-5 h-5" />
-              </button> */}
-
               <Link
                 to="/profile/edit-profile-picture"
                 state={{ user: userData }}
@@ -129,10 +104,6 @@ const AccountOverview = () => {
               <p className="text-sm text-gray-500 mb-1">Phone</p>
               <p className="text-gray-900">{userData.phone_number}</p>
             </div>
-            {/* <div className="md:col-span-2">
-            <p className="text-sm text-gray-500 mb-1">Bio</p>
-            <p className="text-gray-900">Team Manager</p>
-          </div> */}
           </div>
         </div>
       </main>

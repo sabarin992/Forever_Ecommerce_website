@@ -174,9 +174,6 @@ const App = () => {
         </Route>
         {/* Admin Routes */}
         <Route path="/admin">
-          {/* {token === "" ? (
-            <Route path="" element={<Navigate to="/admin-login" replace />} />
-          ) : ( */}
           <Route
             path=""
             element={

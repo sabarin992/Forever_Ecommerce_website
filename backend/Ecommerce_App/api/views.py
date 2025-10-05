@@ -61,7 +61,7 @@ from cloudinary.exceptions import Error as CloudinaryError
 
 # Basic configuration
 logging.basicConfig(
-    level=logging.INFO,  # You can set DEBUG, INFO, WARNING, ERROR, CRITICAL
+    level=logging.INFO, 
     format='%(levelname)s - %(message)s'
 )
 
@@ -102,7 +102,7 @@ def querydict_to_dict(querydict):
 
 def paginate_queryset(queryset,size,request):
         paginator = PageNumberPagination()
-        paginator.page_size = size  # Optional: override default page size
+        paginator.page_size = size 
         # Paginate the queryset
         paginated_queryset = paginator.paginate_queryset(queryset, request)
         
@@ -179,19 +179,6 @@ def get_users_data(request,users=None):
 
 
 
-# def save_image_from_url(image_url):
-#     try:
-#         response = req.get(image_url)
-#         if response.status_code == 200:
-#             filename = os.path.basename(urlparse(image_url).path)
-#             return ContentFile(response.content, name=filename)
-#     except Exception as e:
-#         pass
-#     return None
-
-
-
-
 def save_image_from_url(image_url):
     try:
         response = req.get(image_url)
@@ -253,17 +240,17 @@ def login(request):
             # Create response
             response = Response({
                 "message": "Login successful",
-                "user": {"email": user.email},  # Add user info if needed
+                "user": {"email": user.email},  
             }, status=status.HTTP_200_OK)
 
             # Set HTTP-only cookies
             response.set_cookie(
                 key='access_token',
                 value=access_token,
-                httponly=True,  # Prevent JavaScript access
-                secure=True,    # Use HTTPS in production
-                samesite='None',  # Prevent CSRF
-                max_age=3600,    # Access token expiry (e.g., 1 hour)
+                httponly=True,  
+                secure=True,    
+                samesite='None',  
+                max_age=3600,  
                 domain=".sabarinathem.xyz"
             )
             response.set_cookie(
@@ -272,7 +259,7 @@ def login(request):
                 httponly=True,
                 secure=True,
                 samesite='None',
-                max_age=7 * 24 * 3600,  # Refresh token expiry (e.g., 7 days)
+                max_age=7 * 24 * 3600, 
                 domain=".sabarinathem.xyz"
             )
 
@@ -328,7 +315,7 @@ def refresh_token(request):
             httponly=True,
             secure=True,
             samesite='None',
-            max_age=3600,  # Adjust based on access token lifetime
+            max_age=3600,  
             domain=".sabarinathem.xyz"
         )
 
@@ -378,17 +365,17 @@ def admin_login(request):
     # Create response
     response = Response({
         "message": "Login successful",
-        "user": {"email": user.email},  # Add user info if needed
+        "user": {"email": user.email},  
     }, status=status.HTTP_200_OK)
 
     # Set HTTP-only cookies
     response.set_cookie(
         key='access_token',
         value=access_token,
-        httponly=True,  # Prevent JavaScript access
-        secure=True,    # Use HTTPS in production
-        samesite='None',  # Prevent CSRF
-        max_age=3600,    # Access token expiry (e.g., 1 hour)
+        httponly=True,  
+        secure=True,    
+        samesite='None',  
+        max_age=3600,    
         domain=".sabarinathem.xyz"
     )
     response.set_cookie(
@@ -397,18 +384,12 @@ def admin_login(request):
         httponly=True,
         secure=True,
         samesite='None',
-        max_age=7 * 24 * 3600,  # Refresh token expiry (e.g., 7 days)
+        max_age=7 * 24 * 3600,  
         domain=".sabarinathem.xyz"
     )
 
     return response
 
-    # refresh = RefreshToken.for_user(user)
-    # return Response({
-    #     'refresh': str(refresh),
-    #     'access': str(refresh.access_token),
-    #     'email': user.email
-    # }, status=status.HTTP_200_OK)  
 
 
 # google login
@@ -446,13 +427,13 @@ def google_login(request):
             defaults={
                 'first_name': first_name,
                 'last_name': last_name,
-                'phone_number': '0000000000'  # Placeholder since it's required
+                'phone_number': '0000000000'  
             }
         )
 
         response = Response({
                 "message": "Login successful",
-                "user": {"email": user.email},  # Add user info if needed
+                "user": {"email": user.email},  
             }, status=status.HTTP_200_OK)
         
         
@@ -465,10 +446,10 @@ def google_login(request):
         response.set_cookie(
             key='access_token',
             value=access_token,
-            httponly=True,  # Prevent JavaScript access
-            secure=True,    # Use HTTPS in production
-            samesite='None',  # Prevent CSRF
-            max_age=3600,    # Access token expiry (e.g., 1 hour)
+            httponly=True,  
+            secure=True,    
+            samesite='None', 
+            max_age=3600,    
             domain=".sabarinathem.xyz"
         )
         response.set_cookie(
@@ -477,17 +458,11 @@ def google_login(request):
             httponly=True,
             secure=True,
             samesite='None',
-            max_age=7 * 24 * 3600,  # Refresh token expiry (e.g., 7 days)
+            max_age=7 * 24 * 3600,  
             domain=".sabarinathem.xyz"
         )
 
         return response
-
-
-        # return Response({
-        #     'refresh': str(refresh),
-        #     'access': str(refresh.access_token),
-        # }, status=status.HTTP_200_OK)
 
     except ValueError as e:
         return Response({'error': f'Invalid token: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
@@ -1315,7 +1290,7 @@ def add_to_cart(request):
 @permission_classes([IsAuthenticated])
 def get_all_cart_products(request):
     carts = CartItem.objects.filter(user = request.user)
-    carts = CartItem.objects.filter(user=request.user).order_by('id')  # or 'created_at', 'product__name', etc.
+    carts = CartItem.objects.filter(user=request.user).order_by('id')  
     total_price = carts.aggregate(Sum('total_price'))
     total_discount = carts.aggregate(Sum('total_discount'))
     data = paginate_queryset(carts,5,request)
@@ -1814,33 +1789,6 @@ def verify_retry_payment(request):
         
     except Exception as e:
         return Response({'success': False, 'message': str(e)})
-
-
-
-
-
-
-
-    
-# pagination suggestion from jaseem sir
-# =======================================
-
-# def paginate_and_serialize(queryset, request, serializer_class, page_size):
-#     paginator = PageNumberPagination()
-#     paginator.page_size = page_size
-#     paginated_queryset = paginator.paginate_queryset(queryset, request)
-#     serializer = serializer_class(paginated_queryset, many=True)
-#     return paginator.get_paginated_response({"status": True, "page_size": paginator.page_size, "data": serializer.data})
-
-
-
-
-# def handle_exception(e):
-#     exc_type, exc_obj, tb = sys.exc_info()
-#     line_no = tb.tb_lineno
-#     return Response({"status": False, "message": f"Error: {str(e)} at line {line_no}"}, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 

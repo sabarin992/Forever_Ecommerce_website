@@ -270,10 +270,6 @@ class Order(models.Model):
     total_discount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     coupon_discount = models.IntegerField(default=0,null=True)
     final_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
-
-    # total = models.DecimalField(max_digits=10, decimal_places=2)
-    # discounted_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
-
     currency = models.CharField(max_length=10, default='INR')
     razorpay_order_id = models.CharField(max_length=100, null=True, blank=True)
     razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
@@ -285,15 +281,11 @@ class Order(models.Model):
         verbose_name_plural = "Orders"
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # For new orders
+        if not self.pk: 
             # Get coupon discount from session if exists
             request = kwargs.pop('request', None)
             if request and request.session.get('discount_amount'):
                 try:
-                    # # Apply discount to total
-                    # discount = Decimal(request.session.get('discount_amount', '0'))
-                    # self.total = self.total - discount
-                    
                     # Clear coupon data from session
                     request.session.pop('coupon_id', None)
                     request.session.pop('discount_amount', None)
@@ -502,7 +494,7 @@ class ProductOffer(models.Model):
         super().delete(*args, **kwargs)
         # After deleting product offer, apply category offer if exists
         for variant in product.variants.all():
-            variant.refresh_from_db()  # Ensure fresh state
+            variant.refresh_from_db()  
             variant.update_discount()
 
     def __str__(self):
@@ -528,13 +520,13 @@ class CategoryOffer(models.Model):
                 variant.update_discount()
     
     def delete(self, *args, **kwargs):
-        category = self.category  # Store before deletion
+        category = self.category  
         super().delete(*args, **kwargs)
         # After deleting category offer, apply product offer if exists
         for product in category.products.all():
             for variant in product.variants.all():
-                variant.refresh_from_db()  # Ensure fresh state
-                variant.update_discount()  # This will internally call calculate_discount()
+                variant.refresh_from_db() 
+                variant.update_discount()  
 
 
     def __str__(self):
