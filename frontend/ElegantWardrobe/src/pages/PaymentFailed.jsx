@@ -6,7 +6,11 @@ import { showSuccessAlert } from "../utils/alert";
 import { toast } from "react-toastify";
 
 const PaymentFailed = () => {
-  const { currency } = useContext(ShopContext);
+  const {
+    isRomoveCartItem,
+    setIsRomoveCartItem,
+    currency,
+  } = useContext(ShopContext);
   const [orderDetails, setOrderDetails] = useState({});
   const [isRetrying, setIsRetrying] = useState(false);
   const location = useLocation();
@@ -82,6 +86,8 @@ const PaymentFailed = () => {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
+
+            setIsRomoveCartItem(!isRomoveCartItem)
 
             showSuccessAlert(
               "Payment Successful",
