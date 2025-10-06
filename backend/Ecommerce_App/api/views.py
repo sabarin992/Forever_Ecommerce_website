@@ -251,7 +251,7 @@ def login(request):
                 secure=True,    
                 samesite='None',  
                 max_age=3600,  
-                # domain=".sabarinathem.xyz"
+                domain=".sabarinathem.xyz"
             )
             response.set_cookie(
                 key='refresh_token',
@@ -260,7 +260,7 @@ def login(request):
                 secure=True,
                 samesite='None',
                 max_age=7 * 24 * 3600, 
-                # domain=".sabarinathem.xyz"
+                domain=".sabarinathem.xyz"
             )
 
             return response
@@ -316,7 +316,7 @@ def refresh_token(request):
             secure=True,
             samesite='None',
             max_age=3600,  
-            # domain=".sabarinathem.xyz"
+            domain=".sabarinathem.xyz"
         )
 
         return response
@@ -376,7 +376,7 @@ def admin_login(request):
         secure=True,    
         samesite='None',  
         max_age=3600,    
-        # domain=".sabarinathem.xyz"
+        domain=".sabarinathem.xyz"
     )
     response.set_cookie(
         key='refresh_token',
@@ -385,7 +385,7 @@ def admin_login(request):
         secure=True,
         samesite='None',
         max_age=7 * 24 * 3600,  
-        # domain=".sabarinathem.xyz"
+        domain=".sabarinathem.xyz"
     )
 
     return response
@@ -450,7 +450,7 @@ def google_login(request):
             secure=True,    
             samesite='None', 
             max_age=3600,    
-            # domain=".sabarinathem.xyz"
+            domain=".sabarinathem.xyz"
         )
         response.set_cookie(
             key='refresh_token',
@@ -459,7 +459,7 @@ def google_login(request):
             secure=True,
             samesite='None',
             max_age=7 * 24 * 3600,  
-            # domain=".sabarinathem.xyz"
+            domain=".sabarinathem.xyz"
         )
 
         return response
