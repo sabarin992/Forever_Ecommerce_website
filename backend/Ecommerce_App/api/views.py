@@ -279,12 +279,14 @@ def logout(request):
     response.delete_cookie(
         key='access_token',
         path='/',  # default path used during set_cookie 
-        samesite = 'None'
+        samesite = 'None',
+        domain=".sabarinathem.xyz"
     )
     response.delete_cookie(
         key='refresh_token',
         path='/',
-        samesite = 'None'
+        samesite = 'None',
+        domain=".sabarinathem.xyz"
         )
 
     return response
