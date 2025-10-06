@@ -150,7 +150,7 @@ const EditProfile = () => {
             first_name: formData.first_name.trim(),
             last_name: formData.last_name.trim(),
         };
-        
+
         if (trimmedFormData.email !== oldEmail) {
             setLoading(true);
             try {

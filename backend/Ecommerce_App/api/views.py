@@ -1102,33 +1102,69 @@ def user_profile(request):
     return Response(user_data,status=status.HTTP_200_OK)
 
 
-@api_view(['PUT','GET'])
+
+@api_view(['PUT', 'GET'])
 @permission_classes([IsAuthenticated])
 def edit_user_profile(request):
-    user = CustomUser.objects.get(pk = request.user.id)
-    is_phone_number_exist = CustomUser.objects.filter(phone_number=request.data["phone_number"]).exists()
+    user = CustomUser.objects.get(pk=request.user.id)
 
-    if user.phone_number == request.data["phone_number"]:
-        pass
-    elif is_phone_number_exist:
-        return Response({'error':'Phone Number Already Exist'},status=status.HTTP_400_BAD_REQUEST)
     if request.method == 'GET':
         user_data = {
-            "id":user.id,
-            "first_name":user.first_name,
-            "last_name":user.last_name,
-            "email":user.email,
-            "phone_number":user.phone_number,
-                
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "phone_number": user.phone_number,
         }
-        return Response(user_data,status=status.HTTP_200_OK)
+        return Response(user_data, status=status.HTTP_200_OK)
+
     elif request.method == 'PUT':
-        user.first_name = request.data["first_name"]
-        user.last_name = request.data["last_name"]
-        user.email = request.data["email"]
-        user.phone_number = request.data["phone_number"]
+        phone_number = request.data.get("phone_number")
+        if not phone_number:
+            return Response({"error": "Phone number is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if phone number already exists in another account
+        is_phone_number_exist = CustomUser.objects.filter(phone_number=phone_number).exclude(id=user.id).exists()
+        if is_phone_number_exist:
+            return Response({"error": "Phone Number Already Exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.first_name = request.data.get("first_name", user.first_name).strip()
+        user.last_name = request.data.get("last_name", user.last_name).strip()
+        user.email = request.data.get("email", user.email).strip()
+        user.phone_number = phone_number
         user.save()
-        return Response('User Edited Successfull',status=status.HTTP_200_OK)
+
+        return Response("User Edited Successfully", status=status.HTTP_200_OK)
+
+
+# @api_view(['PUT','GET'])
+# @permission_classes([IsAuthenticated])
+# def edit_user_profile(request):
+#     print(request.data)
+#     user = CustomUser.objects.get(pk = request.user.id)
+#     is_phone_number_exist = CustomUser.objects.filter(phone_number=request.data["phone_number"]).exists()
+
+#     if user.phone_number == request.data["phone_number"]:
+#         pass
+#     elif is_phone_number_exist:
+#         return Response({'error':'Phone Number Already Exist'},status=status.HTTP_400_BAD_REQUEST)
+#     if request.method == 'GET':
+#         user_data = {
+#             "id":user.id,
+#             "first_name":user.first_name,
+#             "last_name":user.last_name,
+#             "email":user.email,
+#             "phone_number":user.phone_number,
+                
+#         }
+#         return Response(user_data,status=status.HTTP_200_OK)
+#     elif request.method == 'PUT':
+#         user.first_name = request.data["first_name"]
+#         user.last_name = request.data["last_name"]
+#         user.email = request.data["email"]
+#         user.phone_number = request.data["phone_number"]
+#         user.save()
+#         return Response('User Edited Successfull',status=status.HTTP_200_OK)
     
 
 @api_view(['PUT'])
