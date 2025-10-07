@@ -429,7 +429,7 @@ def google_login(request):
             defaults={
                 'first_name': first_name,
                 'last_name': last_name,
-                # 'phone_number': ''  
+                'phone_number': f"999{random.randint(1000000, 9999999)}" 
             }
         )
 
