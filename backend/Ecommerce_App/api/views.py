@@ -1662,47 +1662,6 @@ def cancel_order(request,id):
 
 
 
-
-@api_view(['PUT'])
-def cancel_order_item(request, id):
-    try:
-        item = OrderItem.objects.get(id=id)
-        order = item.order
-
-        # Convert safely to Decimal
-        total_order_price = Decimal(order.total_price)
-        discount_percentage = Decimal('0.40')  # 40%
-        total_order_discount = total_order_price * discount_percentage
-
-        # Calculate this item's share of discount
-        item_discount_share = (item.total_amount / total_order_price) * total_order_discount
-
-        # Amount to refund = item total - item discount share
-        refund_amount = item.total_amount - item_discount_share
-
-        print(f'refund amount = {refund_amount}')
-
-        # Store in wallet
-        wallet, _ = Wallet.objects.get_or_create(user=order.user)
-        wallet.balance += refund_amount
-        wallet.save()
-
-        # Mark item as cancelled
-        item.status = 'cancelled'
-        item.save()
-
-        return Response({
-            'message': 'Item cancelled successfully',
-            'refund_added': str(refund_amount),
-            'wallet_balance': str(wallet.balance)
-        }, status=status.HTTP_200_OK)
-
-    except OrderItem.DoesNotExist:
-        return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def cancel_order_item(request, id):
@@ -2017,17 +1976,88 @@ def return_reasons(request,order_item_id):
             return Response({"error": "Order item return not found"}, status=status.HTTP_404_NOT_FOUND)
     except OrderItem.DoesNotExist:
         return Response({"error": "Order item not found"}, status=status.HTTP_404_NOT_FOUND)
-    
+
+
+ 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def cancel_order_item(request, id):
+    try:
+        # Get the item and validate user ownership
+        item = OrderItem.objects.get(pk=id, order__user=request.user)
+        product_variant = item.product_variant
+        order = item.order
+
+        # Check item status
+        if item.status in ['DELIVERED', 'CANCELED', 'RETURNED']:
+            return Response({'error': 'Item cannot be canceled.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # ---- Step 1: Get total order values ----
+        total_order_price = order.total_price
+        total_order_discount = order.total_discount or Decimal('0.00')
+
+        # ---- Step 2: Calculate proportional discount for this item ----
+        if total_order_price > 0:
+            item_discount_share = (Decimal(item.total_amount) / total_order_price) * total_order_discount
+        else:
+            item_discount_share = Decimal('0.00')
+
+        # ---- Step 3: Calculate refundable (discounted) amount ----
+        refund_amount = Decimal(item.total_amount) - item_discount_share
+
+        print(f'total_order_price = {total_order_price} total_order_discount = {total_order_discount} refund_amount={refund_amount}')
+
+
+        # ---- Step 4: Update item status ----
+        item.status = 'CANCELED'
+        item.save()
+
+        # ---- Step 5: Refund to wallet ----
+        wallet, created = Wallet.objects.get_or_create(user=order.user)
+        wallet.credit(
+            amount=round(refund_amount),
+            description=f"Refund for cancelled order item - {item.product_variant}"
+        )
+
+        # ---- Step 6: Update stock ----
+        product_variant.stock_quantity += item.quantity
+        product_variant.save()
+
+        # ---- Step 7: Check if all items are canceled ----
+        if all(i.status == 'CANCELED' for i in order.order_items.all()):
+            order.status = 'CANCELED'
+            order.save()
+
+        return Response({
+            'message': f'Order item canceled successfully. ₹{round(refund_amount)} refunded to wallet.',
+            'refund_amount': str(refund_amount),
+            'item_discount_share': str(item_discount_share)
+        }, status=status.HTTP_200_OK)
+
+    except OrderItem.DoesNotExist:
+        return Response({'error': 'Order item not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 # api for approve or reject the returned item
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated,IsAdminUser])
 def handle_return_approval(request, order_item_id):
     try:
-        order_item = OrderItem.objects.get(id=order_item_id)
-        product_variant = ProductVariant.objects.get(pk = order_item.product_variant.id)
-
+        order_item = OrderItem.objects.get(id=order_item_id) #order_item
+        product_variant = ProductVariant.objects.get(pk = order_item.product_variant.id) #product_variant
+        order = order_item.order #order
         
+        total_order_price = order.total_price
+        total_order_discount = order.total_discount or Decimal('0.00')
+
+        # ---- Step 2: Calculate proportional discount for this item ----
+        if total_order_price > 0:
+            item_discount_share = (Decimal(order_item.total_amount) / total_order_price) * total_order_discount
+        else:
+            item_discount_share = Decimal('0.00')
+
+        refund_amount = Decimal(order_item.total_amount) - item_discount_share
+
+        print(f'item_price = {order_item.total_amount} total_order_price = {total_order_price} total_order_discount = {total_order_discount} refund_amount={refund_amount}')
 
         # Ensure this order item has a return request
         if not hasattr(order_item, 'order_item_return'):
@@ -2048,7 +2078,7 @@ def handle_return_approval(request, order_item_id):
 
             wallet, created = Wallet.objects.get_or_create(user=order_item.order.user)
             wallet.credit(
-                    amount=Decimal(str(order_item.total_amount)),
+                    amount=Decimal(str(round(refund_amount))),
                     description=f"Refund for cancelled order item - {order_item.product_variant}"
                 )
             # wallet, created = Wallet.objects.get_or_create(user=order_item.order.user)
