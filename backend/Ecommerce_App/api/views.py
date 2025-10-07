@@ -251,7 +251,7 @@ def login(request):
                 secure=True,    
                 samesite='None',  
                 max_age=3600,  
-                domain=".sabarinathem.xyz"
+                # domain=".sabarinathem.xyz"
             )
             response.set_cookie(
                 key='refresh_token',
@@ -260,7 +260,7 @@ def login(request):
                 secure=True,
                 samesite='None',
                 max_age=7 * 24 * 3600, 
-                domain=".sabarinathem.xyz"
+                # domain=".sabarinathem.xyz"
             )
 
             return response
@@ -280,13 +280,13 @@ def logout(request):
         key='access_token',
         path='/',  # default path used during set_cookie 
         samesite = 'None',
-        domain=".sabarinathem.xyz"
+        # domain=".sabarinathem.xyz"
     )
     response.delete_cookie(
         key='refresh_token',
         path='/',
         samesite = 'None',
-        domain=".sabarinathem.xyz"
+        # domain=".sabarinathem.xyz"
         )
 
     return response
@@ -318,7 +318,7 @@ def refresh_token(request):
             secure=True,
             samesite='None',
             max_age=3600,  
-            domain=".sabarinathem.xyz"
+            # domain=".sabarinathem.xyz"
         )
 
         return response
@@ -378,7 +378,7 @@ def admin_login(request):
         secure=True,    
         samesite='None',  
         max_age=3600,    
-        domain=".sabarinathem.xyz"
+        # domain=".sabarinathem.xyz"
     )
     response.set_cookie(
         key='refresh_token',
@@ -387,7 +387,7 @@ def admin_login(request):
         secure=True,
         samesite='None',
         max_age=7 * 24 * 3600,  
-        domain=".sabarinathem.xyz"
+        # domain=".sabarinathem.xyz"
     )
 
     return response
@@ -452,7 +452,7 @@ def google_login(request):
             secure=True,    
             samesite='None', 
             max_age=3600,    
-            domain=".sabarinathem.xyz"
+            # domain=".sabarinathem.xyz"
         )
         response.set_cookie(
             key='refresh_token',
@@ -461,7 +461,7 @@ def google_login(request):
             secure=True,
             samesite='None',
             max_age=7 * 24 * 3600,  
-            domain=".sabarinathem.xyz"
+            # domain=".sabarinathem.xyz"
         )
 
         return response
@@ -1565,6 +1565,9 @@ def get_all_orders(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def order_details(request, id):
+    """
+    
+    """
     try:
         if not request.user.is_staff == True:
             order = Order.objects.get(pk=id, user=request.user)
@@ -1631,6 +1634,9 @@ def order_details(request, id):
     return Response(order_data, status=status.HTTP_200_OK)
 
 
+
+
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def cancel_order(request,id):
@@ -1655,40 +1661,155 @@ def cancel_order(request,id):
         return Response({'error': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 
+
+
+@api_view(['PUT'])
+def cancel_order_item(request, id):
+    try:
+        item = OrderItem.objects.get(id=id)
+        order = item.order
+
+        # Convert safely to Decimal
+        total_order_price = Decimal(order.total_price)
+        discount_percentage = Decimal('0.40')  # 40%
+        total_order_discount = total_order_price * discount_percentage
+
+        # Calculate this item's share of discount
+        item_discount_share = (item.total_amount / total_order_price) * total_order_discount
+
+        # Amount to refund = item total - item discount share
+        refund_amount = item.total_amount - item_discount_share
+
+        print(f'refund amount = {refund_amount}')
+
+        # Store in wallet
+        wallet, _ = Wallet.objects.get_or_create(user=order.user)
+        wallet.balance += refund_amount
+        wallet.save()
+
+        # Mark item as cancelled
+        item.status = 'cancelled'
+        item.save()
+
+        return Response({
+            'message': 'Item cancelled successfully',
+            'refund_added': str(refund_amount),
+            'wallet_balance': str(wallet.balance)
+        }, status=status.HTTP_200_OK)
+
+    except OrderItem.DoesNotExist:
+        return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def cancel_order_item(request, id):
     try:
+        # Get the item and validate user ownership
         item = OrderItem.objects.get(pk=id, order__user=request.user)
-        product_variant = ProductVariant.objects.get(pk = item.product_variant.id)
+        product_variant = item.product_variant
+        order = item.order
 
+        # Check item status
         if item.status in ['DELIVERED', 'CANCELED', 'RETURNED']:
             return Response({'error': 'Item cannot be canceled.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # ---- Step 1: Get total order values ----
+        total_order_price = order.total_price
+        total_order_discount = order.total_discount or Decimal('0.00')
+
+        # ---- Step 2: Calculate proportional discount for this item ----
+        if total_order_price > 0:
+            item_discount_share = (Decimal(item.total_amount) / total_order_price) * total_order_discount
+        else:
+            item_discount_share = Decimal('0.00')
+
+        # ---- Step 3: Calculate refundable (discounted) amount ----
+        refund_amount = Decimal(item.total_amount) - item_discount_share
+
+        print(f'total_order_price = {total_order_price} total_order_discount = {total_order_discount} refund_amount={refund_amount}')
+
+
+        # ---- Step 4: Update item status ----
         item.status = 'CANCELED'
         item.save()
-        wallet, created = Wallet.objects.get_or_create(user=item.order.user)
+
+        # ---- Step 5: Refund to wallet ----
+        wallet, created = Wallet.objects.get_or_create(user=order.user)
         wallet.credit(
-                    amount=Decimal(str(item.total_amount)),
-                    description=f"Refund for cancelled order item - {item.product_variant}"
-                )
-        order = item.order
+            amount=round(refund_amount),
+            description=f"Refund for cancelled order item - {item.product_variant}"
+        )
+
+        # ---- Step 6: Update stock ----
+        product_variant.stock_quantity += item.quantity
+        product_variant.save()
+
+        # ---- Step 7: Check if all items are canceled ----
         if all(i.status == 'CANCELED' for i in order.order_items.all()):
             order.status = 'CANCELED'
             order.save()
 
-        # increment the product variant quantity
-        product_variant.stock_quantity += item.quantity
-        product_variant.save()
-        
-
-        return Response({'message': 'Order item canceled successfully.'}, status=status.HTTP_200_OK)
+        return Response({
+            'message': f'Order item canceled successfully. ₹{round(refund_amount)} refunded to wallet.',
+            'refund_amount': str(refund_amount),
+            'item_discount_share': str(item_discount_share)
+        }, status=status.HTTP_200_OK)
 
     except OrderItem.DoesNotExist:
         return Response({'error': 'Order item not found.'}, status=status.HTTP_404_NOT_FOUND)
-    except ValueError:
-        logging.info('value error')
-        return HttpResponse('success')
+
+
+
+# @api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+# def cancel_order_item(request, id):
+#     try:
+#         item = OrderItem.objects.get(pk=id, order__user=request.user)
+#         product_variant = ProductVariant.objects.get(pk = item.product_variant.id)
+#         order = item.order
+
+#            # Convert safely to Decimal
+#         total_order_price = Decimal(order.total_price)
+#         total_order_discount = order.total_discount  or Decimal('0.00')
+
+#         # Calculate this item's share of discount
+#         item_discount_share = (Decimal(item.total_amount) / total_order_price) * total_order_discount
+
+#         # Amount to refund = item total - item discount share
+#         refund_amount = Decimal(item.total_amount) - item_discount_share
+#         print(f'total_order_price = {total_order_price} total_order_discount = {total_order_discount} refund_amount={refund_amount}')
+
+#         if item.status in ['DELIVERED', 'CANCELED', 'RETURNED']:
+#             return Response({'error': 'Item cannot be canceled.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         item.status = 'CANCELED'
+#         item.save()
+#         wallet, created = Wallet.objects.get_or_create(user=item.order.user)
+#         wallet.credit(
+#                     amount=round(refund_amount),
+#                     description=f"Refund for cancelled order item - {item.product_variant}"
+#                 )
+#         print(f'item.total_amount = {item.total_amount}')
+#         order = item.order
+#         if all(i.status == 'CANCELED' for i in order.order_items.all()):
+#             order.status = 'CANCELED'
+#             order.save()
+
+#         # increment the product variant quantity
+#         product_variant.stock_quantity += item.quantity
+#         product_variant.save()
+        
+
+#         return Response({'message': 'Order item canceled successfully.'}, status=status.HTTP_200_OK)
+
+#     except OrderItem.DoesNotExist:
+#         return Response({'error': 'Order item not found.'}, status=status.HTTP_404_NOT_FOUND)
+#     except ValueError:
+#         logging.info('value error')
+#         return HttpResponse('success')
     
 
 @api_view(['PUT'])
