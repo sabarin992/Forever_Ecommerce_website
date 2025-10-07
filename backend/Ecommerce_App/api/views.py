@@ -429,7 +429,7 @@ def google_login(request):
             defaults={
                 'first_name': first_name,
                 'last_name': last_name,
-                'phone_number': '0000000000'  
+                # 'phone_number': ''  
             }
         )
 
