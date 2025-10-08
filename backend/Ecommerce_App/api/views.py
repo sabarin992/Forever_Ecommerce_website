@@ -2244,7 +2244,12 @@ def is_product_in_wishlist(request, product_variant_id):
 def get_all_wishlist_products(request):
     user = request.user
     logging.info(f'user = {user.first_name}')
-    wishlist_items = Wishlist.objects.filter(user=user)
+    wishlist_items = Wishlist.objects.filter(
+        user=user,
+        product_variant__product__category__is_active = True,
+        product_variant__product__is_active = True,
+        product_variant__is_active = True
+        )
     wishlist_data = [
         {
             "id": item.id,
