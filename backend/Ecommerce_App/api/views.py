@@ -224,6 +224,13 @@ def login(request):
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
             return Response({'error': 'Invalid Email'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if user is blocked/inactive
+        if not user.is_active:
+            return Response(
+                {'error': 'Your account has been blocked by admin. Please contact support.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         # Validate password
         if not check_password(password, user.password):
@@ -251,7 +258,7 @@ def login(request):
                 secure=True,    
                 samesite='None',  
                 max_age=3600,  
-                # domain=".sabarinathem.xyz"
+                domain=".sabarinathem.xyz"
             )
             response.set_cookie(
                 key='refresh_token',
@@ -260,7 +267,7 @@ def login(request):
                 secure=True,
                 samesite='None',
                 max_age=7 * 24 * 3600, 
-                # domain=".sabarinathem.xyz"
+                domain=".sabarinathem.xyz"
             )
 
             return response
@@ -280,13 +287,13 @@ def logout(request):
         key='access_token',
         path='/',  # default path used during set_cookie 
         samesite = 'None',
-        # domain=".sabarinathem.xyz"
+        domain=".sabarinathem.xyz"
     )
     response.delete_cookie(
         key='refresh_token',
         path='/',
         samesite = 'None',
-        # domain=".sabarinathem.xyz"
+        domain=".sabarinathem.xyz"
         )
 
     return response
@@ -318,7 +325,7 @@ def refresh_token(request):
             secure=True,
             samesite='None',
             max_age=3600,  
-            # domain=".sabarinathem.xyz"
+            domain=".sabarinathem.xyz"
         )
 
         return response
@@ -378,7 +385,7 @@ def admin_login(request):
         secure=True,    
         samesite='None',  
         max_age=3600,    
-        # domain=".sabarinathem.xyz"
+        domain=".sabarinathem.xyz"
     )
     response.set_cookie(
         key='refresh_token',
@@ -387,7 +394,7 @@ def admin_login(request):
         secure=True,
         samesite='None',
         max_age=7 * 24 * 3600,  
-        # domain=".sabarinathem.xyz"
+        domain=".sabarinathem.xyz"
     )
 
     return response
@@ -452,7 +459,7 @@ def google_login(request):
             secure=True,    
             samesite='None', 
             max_age=3600,    
-            # domain=".sabarinathem.xyz"
+            domain=".sabarinathem.xyz"
         )
         response.set_cookie(
             key='refresh_token',
@@ -461,7 +468,7 @@ def google_login(request):
             secure=True,
             samesite='None',
             max_age=7 * 24 * 3600,  
-            # domain=".sabarinathem.xyz"
+            domain=".sabarinathem.xyz"
         )
 
         return response

@@ -33,7 +33,7 @@ api.interceptors.response.use(
       try {
         console.log("Refreshing token...");
         // Make sure to use withCredentials for refresh request too
-        await api.post("/token/refresh/", {}, { withCredentials: true });
+        await api.post("/token/refresh/", { withCredentials: true });
 
         return api(originalRequest); // Retry original request
       } catch (refreshError) {
