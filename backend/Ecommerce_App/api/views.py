@@ -864,9 +864,15 @@ def filter_product(request):
         variant_id=Subquery(first_variant_subquery.values('id')[:1])
     ).values_list('variant_id', flat=True)
 
-    products = ProductVariant.objects.filter(id__in=first_variants,product__is_active = True)
+    # products = ProductVariant.objects.filter(id__in=first_variants,product__is_active = True,product__category__is_active = True)
     
-
+    products = ProductVariant.objects.filter(
+    id__in=first_variants,
+    is_active=True,               # variant itself is active
+    product__is_active=True,      # product is active
+    product__category__is_active=True  # category is active
+    
+)
     # Step 2: Filter by category if provided
     if categories:
         category_list = categories.split(',')  # Split if categories are passed as a single string
