@@ -68,6 +68,9 @@ logging.basicConfig(
 # redis server setup
 r = redis.StrictRedis(host="localhost", port=6379, db=0, decode_responses=True)
 
+# cookie domain
+cookie_domain = config("COOKIE_DOMAIN", default=None)
+
 # For convert Querydict to dictionary for add product 
 def querydict_to_dict(querydict):
     data = {
@@ -243,6 +246,7 @@ def login(request):
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
+            
 
             # Create response
             response = Response({
@@ -258,7 +262,7 @@ def login(request):
                 secure=True,    
                 samesite='None',  
                 max_age=3600,  
-                domain=".sabarinathem.xyz"
+                domain=cookie_domain
             )
             response.set_cookie(
                 key='refresh_token',
@@ -267,7 +271,7 @@ def login(request):
                 secure=True,
                 samesite='None',
                 max_age=7 * 24 * 3600, 
-                domain=".sabarinathem.xyz"
+                domain=cookie_domain
             )
 
             return response
@@ -287,13 +291,13 @@ def logout(request):
         key='access_token',
         path='/',  # default path used during set_cookie 
         samesite = 'None',
-        domain=".sabarinathem.xyz"
+        domain=cookie_domain
     )
     response.delete_cookie(
         key='refresh_token',
         path='/',
         samesite = 'None',
-        domain=".sabarinathem.xyz"
+        domain=cookie_domain
         )
 
     return response
@@ -325,7 +329,7 @@ def refresh_token(request):
             secure=True,
             samesite='None',
             max_age=3600,  
-            domain=".sabarinathem.xyz"
+            domain=cookie_domain
         )
 
         return response
@@ -385,7 +389,7 @@ def admin_login(request):
         secure=True,    
         samesite='None',  
         max_age=3600,    
-        domain=".sabarinathem.xyz"
+        domain=cookie_domain
     )
     response.set_cookie(
         key='refresh_token',
@@ -394,7 +398,7 @@ def admin_login(request):
         secure=True,
         samesite='None',
         max_age=7 * 24 * 3600,  
-        domain=".sabarinathem.xyz"
+        domain=cookie_domain
     )
 
     return response
@@ -459,7 +463,7 @@ def google_login(request):
             secure=True,    
             samesite='None', 
             max_age=3600,    
-            domain=".sabarinathem.xyz"
+            domain=cookie_domain
         )
         response.set_cookie(
             key='refresh_token',
@@ -468,7 +472,7 @@ def google_login(request):
             secure=True,
             samesite='None',
             max_age=7 * 24 * 3600,  
-            domain=".sabarinathem.xyz"
+            domain=cookie_domain
         )
 
         return response
