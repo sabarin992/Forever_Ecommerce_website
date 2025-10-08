@@ -871,7 +871,7 @@ def filter_product(request):
     is_active=True,               # variant itself is active
     product__is_active=True,      # product is active
     product__category__is_active=True  # category is active
-    
+
 )
     # Step 2: Filter by category if provided
     if categories:
@@ -1344,8 +1344,12 @@ def add_to_cart(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_cart_products(request):
-    carts = CartItem.objects.filter(user = request.user)
-    carts = CartItem.objects.filter(user=request.user).order_by('id')  
+    carts = CartItem.objects.filter(
+        user=request.user,
+        product_variant__product__category__is_active = True,
+        product_variant__product__is_active = True,
+        product_variant__is_active = True
+        ).order_by('id')  
     total_price = carts.aggregate(Sum('total_price'))
     total_discount = carts.aggregate(Sum('total_discount'))
     data = paginate_queryset(carts,5,request)
