@@ -1792,13 +1792,46 @@ def cancel_order_item(request, id):
 #         return HttpResponse('success')
     
 
+# @api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+# def update_order_status(request, id):
+#     try:
+#         order = Order.objects.get(pk=id)
+
+#         # Check if the user is authorized to update the order status
+#         if not request.user.is_staff and order.user != request.user:
+#             return Response({'error': 'You are not authorized to update this order.'}, status=status.HTTP_403_FORBIDDEN)
+
+#         new_status = request.data.get('status')
+#         if not new_status:
+#             return Response({'error': 'Status is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # Validate the new status
+#         valid_statuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELED', 'RETURNED']
+#         if new_status.upper() not in valid_statuses:
+#             return Response({'error': f'Invalid status. Valid statuses are: {", ".join(valid_statuses)}'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         # Update the order status
+#         order.status = new_status
+#         order.save()
+
+#         # Update the status of all order items to match the order status
+#         order.order_items.update(status=new_status)
+
+#         return Response({'message': 'Order status updated successfully.', 'status': order.status}, status=status.HTTP_200_OK)
+
+#     except Order.DoesNotExist:
+#         return Response({'error': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_order_status(request, id):
     try:
         order = Order.objects.get(pk=id)
 
-        # Check if the user is authorized to update the order status
+        # Check authorization
         if not request.user.is_staff and order.user != request.user:
             return Response({'error': 'You are not authorized to update this order.'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -1815,13 +1848,14 @@ def update_order_status(request, id):
         order.status = new_status
         order.save()
 
-        # Update the status of all order items to match the order status
-        order.order_items.update(status=new_status)
+        # ✅ Update only order items that are NOT canceled
+        order.order_items.exclude(status='CANCELED').update(status=new_status)
 
         return Response({'message': 'Order status updated successfully.', 'status': order.status}, status=status.HTTP_200_OK)
 
     except Order.DoesNotExist:
         return Response({'error': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+
     
 
 
